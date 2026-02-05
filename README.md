@@ -41,7 +41,7 @@ Features and APIs may change as the project evolves. Feedback and contributions 
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/hotelease.git
+git clone https://github.com/Abfazil/hotel-booking-.git
 
 # Navigate to the project folder
 cd hotelease
