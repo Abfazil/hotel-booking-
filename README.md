@@ -19,8 +19,6 @@ From reservations and room management to customer experience, HotelEase focuses 
 
 ## 🚀 Tech Stack
 
-> Update this section based on what you actually use.
-
 - **Frontend:** React / Next.js / HTML / CSS  
 - **Backend:** Node.js / Express / Django / Laravel  
 - **Database:** PostgreSQL / MySQL / MongoDB  
