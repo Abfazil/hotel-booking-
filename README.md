@@ -19,11 +19,11 @@ From reservations and room management to customer experience, HotelEase focuses 
 
 ## 🚀 Tech Stack
 
-- **Frontend:** React / Next.js / HTML / CSS  
-- **Backend:** Node.js / Express / Django / Laravel  
-- **Database:** PostgreSQL / MySQL / MongoDB  
+- **Frontend:** HTML / CSS  
+- **Backend:** Node.js / Express 
+- **Database:**  MySQL
 - **Authentication:** JWT / OAuth  
-- **Hosting:** AWS / Vercel / Netlify  
+- **Hosting:** AWS   
 
 ---
 
