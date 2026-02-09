@@ -1,125 +1,148 @@
-# HotelEase Code of Conduct
+CODE OF CONDUCT HotelEase
+Version 2.0
+Last updated: February 2026
 
-**Version 1.0**  
-_Last updated: February 2026_
+1. Our Pledge
 
-## Our Commitment
+At HotelEase, we are committed to building technology in an environment that is respectful, inclusive, and collaborative.
+We believe that high-quality software and trustworthy products emerge from teams where people feel safe, heard, and valued.
 
-At HotelEase, people come first. We are committed to fostering a welcoming, inclusive, and respectful environment for everyone who uses, contributes to, or represents HotelEase.
+This Code of Conduct outlines the expectations for behavior for anyone who contributes to, collaborates on, or represents HotelEase — including employees, contractors, and collaborators.
 
-We believe great products are built by diverse people working together in a healthy and constructive way. By participating in the HotelEase community, you agree to uphold this Code of Conduct and help create a safe and positive experience for all.
+Participation in any HotelEase space implies acceptance of and compliance with this Code of Conduct.
 
-Participation in the HotelEase community is open to everyone, regardless of:
+2. Inclusive Community
 
-- Background
-- Age
-- Ability
-- Gender, gender identity, or expression
-- Sexual orientation
-- Race or ethnicity
-- National origin
-- Religion
-- Socioeconomic status
-- Native language
-- Geographic location
-- Or any other personal characteristic
+HotelEase is an inclusive environment. We welcome participation regardless of, but not limited to:
 
----
+Age
 
-## Scope
+Disability
 
-This Code of Conduct applies to all HotelEase spaces, including but not limited to:
+Gender identity or expression
 
-- The HotelEase website and platform
-- GitHub repositories and pull requests
-- Issue trackers and discussions
-- Community forums, chats, and emails
-- Social media interactions related to HotelEase
-- Events, meetings, or online collaborations organized by HotelEase
+Sexual orientation
+
+Race, ethnicity, or nationality
+
+Religion or belief
+
+Socioeconomic background
+
+Native language
+
+Geographic location
+
+Technical background or level of experience
+
+We are committed to ensuring that professional collaboration is free from discrimination, harassment, and exclusion.
+
+3. Scope
+
+This Code of Conduct applies to all HotelEase-related spaces, including:
+
+The HotelEase website and production systems
+
+Proprietary source code repositories
+
+Issue trackers, pull requests, and code reviews
+
+Internal documentation and planning tools
+
+Team chats, emails, and meetings
+
+Public or private communications representing HotelEase
+
+Online or in-person events organized by or for HotelEase
 
 This policy applies whether interactions are public or private, online or offline.
 
----
+4. Expected Behavior
 
-## Expected Behavior
+All participants are expected to:
 
-All members of the HotelEase community are expected to:
+Be Respectful
 
-### Be Respectful
-Treat others with dignity and respect. Differences of opinion are normal, but disrespectful behavior is not. Be mindful of your words, tone, and actions.
+Treat others with professionalism and courtesy. Disagreements are acceptable; disrespect is not.
 
-### Be Professional and Constructive
-Communicate clearly and honestly while remaining professional. Offer criticism thoughtfully and focus on ideas, not individuals.
+Communicate Constructively
 
-### Be Inclusive
-Encourage participation from everyone. Make space for different perspectives and experiences. Be mindful of accessibility, time zones, and language differences.
+Give feedback that is clear, relevant, and focused on the work — not the individual. Assume good intent and seek clarification before escalating conflict.
 
-### Be Open to Feedback
-Take responsibility for your impact. If someone tells you that your behavior caused harm, listen carefully, apologize when appropriate, and work to improve.
+Be Inclusive and Considerate
 
-### Lead by Example
-Your behavior sets the tone. Help build a community that others feel safe joining and contributing to.
+Encourage balanced participation. Be mindful of differences in time zones, communication styles, accessibility needs, and experience levels.
 
----
+Take Responsibility
 
-## Unacceptable Behavior
+Acknowledge mistakes and their impact. If informed that your behavior caused harm, listen openly and work toward improvement.
 
-The following behaviors are not tolerated in the HotelEase community:
+Protect the Project
 
-### Harassment or Discrimination
-Any form of harassment, discrimination, or exclusion based on personal characteristics is unacceptable.
+Respect the proprietary nature of HotelEase systems, data, and code. Act in the best interest of the product, the team, and users.
 
-### Personal Attacks
-Insulting, demeaning, or belittling others is not allowed. Disagreements must stay focused on the topic, not the person.
+5. Unacceptable Behavior
 
-### Derogatory or Harmful Language
-Hateful, offensive, or demeaning language — including slurs or stereotypes — is prohibited.
+The following behaviors are not tolerated in any HotelEase space:
 
-### Unwelcome Sexual Attention
-Unwanted sexual comments, jokes, imagery, advances, or physical contact are not acceptable in any HotelEase space.
+Harassment or Discrimination
 
-### Threats or Violence
-Threats, encouragement of violence, self-harm, or sharing private personal information (doxxing) are strictly prohibited.
+Any behavior that demeans, excludes, or targets individuals based on personal characteristics is unacceptable.
 
-### Disruptive Behavior
-Sustained disruption of discussions, spamming, trolling, or deliberately derailing conversations is not allowed.
+Personal Attacks
 
----
+Insults, mockery, intimidation, or hostility toward others — whether direct or indirect — are prohibited.
 
-## Consequences
+Harmful or Offensive Language
+
+Use of slurs, stereotypes, or demeaning expressions is not allowed.
+
+Unwelcome Sexual Conduct
+
+Unwanted sexual attention, comments, jokes, imagery, or advances are strictly prohibited.
+
+Threats and Safety Violations
+
+Threats of violence, encouragement of self-harm, doxxing, or sharing private personal information are forbidden.
+
+Disruptive or Bad-Faith Conduct
+
+Persistent disruption, trolling, spamming, deliberate obstruction of work, or refusal to engage constructively is unacceptable.
+
+6. Consequences
 
 Violations of this Code of Conduct may result in actions including, but not limited to:
 
-- A warning
-- Temporary suspension from HotelEase spaces
-- Permanent removal from the community
-- Reporting to relevant authorities if required by law
+Informal or formal warnings
 
-Actions will be taken based on the severity and frequency of the violation.
+Temporary suspension of access to HotelEase systems
 
----
+Permanent removal from collaboration or employment
 
-## Reporting Issues
+Legal or regulatory reporting where required
 
-If you experience or witness behavior that violates this Code of Conduct, please report it.
+Consequences are determined based on severity, intent, impact, and frequency of violations.
 
-📧 **Email:** support@hotelease.com  
-(Replace with your official support or conduct email)
+7. Reporting and Support
 
-Reports will be reviewed promptly and handled with care and confidentiality. Retaliation against anyone who reports a concern in good faith will not be tolerated.
+If you experience or witness behavior that violates this Code of Conduct, please report it promptly.
 
-If you believe you have been unfairly accused, you may also contact us using the same reporting channel.
+Reporting contact:
+📧 support@hotelease.com
 
----
+(Replace with your official conduct or HR contact)
 
-## Enforcement
+All reports will be handled confidentially, respectfully, and without retaliation.
+Good-faith reports are always protected.
 
-HotelEase reserves the right to take appropriate action to maintain a safe and respectful community. This Code of Conduct may be updated as the platform and community evolve.
+If you believe you have been unfairly accused, you may also use the same reporting channel.
 
-By participating in HotelEase, you agree to follow this Code of Conduct.
+8. Enforcement
 
----
+HotelEase leadership is responsible for enforcing this Code of Conduct fairly and consistently.
+We reserve the right to take any action necessary to maintain a safe, productive, and respectful working environment.
 
-## Attribution
+This document may be updated as the team, platform, or legal requirements evolve.
 
-This Code of Conduct is inspired by industry best practices and open-source community guidelines, adapted for HotelEase.
+9. Attribution
+inspired by Mozilla Developer Docs (MDN)
