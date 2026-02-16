@@ -18,7 +18,7 @@ const server = http.createServer(function(req, res) {
     // The type of content we are returning. Just plain text.
     res.setHeader("Content-Type", "text/plain");
     // The plain text we are returning.
-    res.end("Abo" + req.url);
+    res.end("Abobakar");
 });
 
 // Start the server listening on the port of the hostname.
