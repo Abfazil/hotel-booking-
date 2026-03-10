@@ -1,0 +1,63 @@
+//- views/hotels-list.pug
+//- Dedicated hotel listing page with grid / list toggle
+
+extends layout
+
+include partials/mixins
+
+block content
+
+  section.listing.listing--grid
+    .listing__inner
+
+      .listing__top-bar
+        .view-toggle
+          span.view-toggle__label View
+          .view-toggle__buttons
+            button.view-toggle__btn.view-toggle__btn--active(type="button" aria-label="Grid view" data-view="grid")
+              i.fas.fa-border-all
+            button.view-toggle__btn(type="button" aria-label="List view" data-view="list")
+              i.fas.fa-list
+
+        .listing__title-group
+          h1.listing__title Discover stays around the world
+          p.listing__subtitle
+            | Browse curated hotels with warm interiors, soft lighting, and modern amenities.
+            |  Switch between cosy list and clean grid views with a single tap.
+
+      .listing__meta
+        span.listing__meta-count #{hotels.length} stays found
+        span.listing__meta-divider ·
+        span.listing__meta-note Popular this week
+
+      .listing__grid
+        each hotel in hotels
+          a.listing-card(href=`/hotels/${hotel.id}`)
+            .listing-card__image
+              if hotel.image
+                img.listing-card__img(src=hotel.image alt=hotel.name loading="lazy")
+              else
+                .listing-card__image-placeholder
+                  i.fas.fa-image
+
+            .listing-card__body
+              .listing-card__body-top
+                h2.listing-card__name= hotel.name
+                span.listing-card__rating
+                  i.fas.fa-star
+                  |  #{hotel.rating.toFixed(1)}
+
+              p.listing-card__location= hotel.location
+              p.listing-card__description
+                | A calm, light‑filled room with crisp linen, soft textures, and a quiet corner
+                |  to unwind after a long day of exploring or meetings.
+
+            .listing-card__meta
+              .listing-card__price
+                span.listing-card__price-label From
+                span.listing-card__price-value $#{hotel.price.toFixed(0)}
+                span.listing-card__price-unit / night
+              div.listing-card__badges-container
+               span.listing-card__badge Free breakfast 
+               span.listing-card__badge Flexible cancellation
+

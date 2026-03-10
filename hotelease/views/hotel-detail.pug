@@ -1,0 +1,76 @@
+//- views/hotel-detail.pug
+//- Hotel detail page with favourite heart animation
+
+extends layout
+
+block content
+
+  section.hotel-detail
+    .hotel-detail__hero
+      .hotel-detail__hero-inner
+        .hotel-detail__breadcrumb
+          a(href="/") Home
+          span ›
+          a(href="/hotels") Hotels
+          span ›
+          span= hotel.name
+
+        .hotel-detail__header
+          .hotel-detail__title-group
+            h1.hotel-detail__title= hotel.name
+            p.hotel-detail__location
+              i.fas.fa-map-marker-alt
+              |  #{hotel.location}
+
+            .hotel-detail__rating
+              span.hotel-detail__rating-badge
+                i.fas.fa-star
+                |  #{hotel.rating.toFixed(1)}
+              span.hotel-detail__rating-caption Loved by modern travellers
+
+          .hotel-detail__side
+            .hotel-detail__price-block
+              span.hotel-detail__price-label From
+              span.hotel-detail__price-value $#{hotel.price.toFixed(0)}
+              span.hotel-detail__price-unit / night
+
+            button.hotel-detail__fav(type="button" aria-label="Add to favourites" data-fav-toggle)
+              i.far.fa-heart
+              //- span Save to favourites
+
+      .hotel-detail__image
+        if hotel.image
+          img.hotel-detail__img(src=hotel.image alt=hotel.name)
+        else
+          .hotel-detail__image-placeholder
+            i.fas.fa-image
+
+      .hotel-detail__layout
+      .hotel-detail__main
+        h2.hotel-detail__section-title About this stay
+        p.hotel-detail__text
+          | Step into a bright, carefully curated space with layered textiles, warm wood tones,
+          |  and soft accent lighting. Every corner is designed to feel calm, welcoming, and
+          |  quietly luxurious.
+
+        p.hotel-detail__text
+          | Wake up to filtered sunlight, fresh coffee, and city or sea views depending on the
+          |  room type you choose. In the evening, dimmed lights and plush bedding create a
+          |  gentle transition from the outside world.
+
+        ul.hotel-detail__highlights
+          li King‑size bed with premium linens
+          li Soft ambient lighting with dimmers
+          li Quiet, well‑insulated rooms for restful sleep
+          li High‑speed Wi‑Fi and a dedicated work corner
+
+      .hotel-detail__sidebar
+        .hotel-detail__card
+          h3.hotel-detail__card-title A cosy place to pause
+          p.hotel-detail__card-text
+            | This room is perfect for slow mornings, late‑night conversations, and quiet solo
+            |  moments. Add it to your favourites with the heart above and come back to it later.
+
+          p.hotel-detail__card-note
+            | The heart icon only animates on tap — no account or booking is required here.
+

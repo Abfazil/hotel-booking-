@@ -1,0 +1,29 @@
+//- views/register.pug
+//- Simple registration page matching the HotelEase theme
+
+extends layout
+
+block content
+
+  section.auth
+    .auth__card
+      h1.auth__title Create your account
+      p.auth__subtitle Join HotelEase and save your favourite stays for later.
+
+      form.auth__form(action="#" method="post")
+        .auth__field
+          label.auth__label(for="name") Full name
+          input.auth__input#name(type="text" name="name" placeholder="Alex Doe" required)
+
+        .auth__field
+          label.auth__label(for="email") Email
+          input.auth__input#email(type="email" name="email" placeholder="you@example.com" required)
+
+        .auth__field
+          label.auth__label(for="password") Password
+          input.auth__input#password(type="password" name="password" placeholder="Create a password" required)
+
+        .auth__footer
+          button.btn--primary(type="submit") Sign Up
+          a.auth__link(href="/login") Already have an account? Log in
+

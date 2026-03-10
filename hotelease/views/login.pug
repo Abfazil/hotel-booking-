@@ -1,0 +1,25 @@
+//- views/login.pug
+//- Simple login page matching the HotelEase theme
+
+extends layout
+
+block content
+
+  section.auth
+    .auth__card
+      h1.auth__title Welcome back
+      p.auth__subtitle Log in to continue planning your next stay with HotelEase.
+
+      form.auth__form(action="#" method="post")
+        .auth__field
+          label.auth__label(for="email") Email
+          input.auth__input#email(type="email" name="email" placeholder="you@example.com" required)
+
+        .auth__field
+          label.auth__label(for="password") Password
+          input.auth__input#password(type="password" name="password" placeholder="••••••••" required)
+
+        .auth__footer
+          button.btn--primary(type="submit") Log In
+          a.auth__link(href="/register") Create a new account
+

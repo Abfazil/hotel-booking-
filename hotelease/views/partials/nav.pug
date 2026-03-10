@@ -1,0 +1,17 @@
+//- views/partials/nav.pug
+//- Reusable navigation component — included via `include partials/nav`
+
+nav.navbar
+  .navbar__brand
+    a.navbar__logo(href="/") HotelEase
+
+  ul.navbar__links
+    li: a.navbar__link.navbar__link--active(href="#home") Home
+    li: a.navbar__link(href="#how") How it Works
+    li: a.navbar__link(href="#booking") Booking Details
+    li: a.navbar__link(href="#why") Why Choose Us
+    li: a.navbar__link(href="#testimonial") Testimonial
+
+  .navbar__actions
+    a.btn--ghost(href="/register") Register
+    a.btn--primary(href="/login") Log In
