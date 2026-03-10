@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Mar 09, 2026 at 10:33 AM
+-- Generation Time: Mar 10, 2026 at 10:39 PM
 -- Server version: 9.6.0
 -- PHP Version: 8.3.26
 
@@ -143,7 +143,13 @@ INSERT INTO `hotels` (`hotel_id`, `hotel_name`, `city`, `country`, `address`, `r
 (7, 'Golden Sands Hotel', 'Dubai', 'UAE', 'Palm Street', 4.6),
 (8, 'Urban Stay Hotel', 'Berlin', 'Germany', 'Alexanderplatz 9', 4.1),
 (9, 'Lakeview Resort', 'Toronto', 'Canada', 'Lake Shore Blvd', 4.3),
-(10, 'Skyline Hotel', 'Tokyo', 'Japan', 'Shibuya Street 3', 4.5);
+(10, 'Skyline Hotel', 'Tokyo', 'Japan', 'Shibuya Street 3', 4.5),
+(11, 'Seaside Escape Resort', 'Miami Beach', 'USA', 'Miami Beach', 4.7),
+(12, 'Midtown Skyline Hotel', 'New York', 'USA', 'New York', 4.5),
+(13, 'Old Town Boutique Suites', 'Prague', 'Czech Republic', 'Old Town, Prague', 4.3),
+(14, 'Sunset Cliffs Retreat', 'Santorini', 'Greece', 'Santorini', 4.8),
+(15, 'Emerald Forest Lodge', 'Vancouver', 'Canada', 'Vancouver', 4.6),
+(16, 'City Lights Business Inn', 'London', 'United Kingdom', 'London', 4.2);
 
 -- --------------------------------------------------------
 
@@ -358,7 +364,7 @@ ALTER TABLE `disputes`
 -- AUTO_INCREMENT for table `hotels`
 --
 ALTER TABLE `hotels`
-  MODIFY `hotel_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `hotel_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `payments`
