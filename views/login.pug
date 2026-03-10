@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  .auth-page
+    .auth-card
+      h2.auth-title Welcome Back
+      p.auth-subtitle Sign in to your HotelEase account
+
+      if error
+        .auth-error= error
+
+      form.auth-form(method="POST" action="/login")
+        .form-group
+          label Email Address
+          input(type="email" name="email" placeholder="Enter your email" required)
+
+        .form-group
+          label Password
+          input(type="password" name="password" placeholder="Enter your password" required)
+
+        button.btn--auth(type="submit") Log In
+
+        .auth-footer
+          p Don't have an account?
+            a(href="/register")  Register here

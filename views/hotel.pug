@@ -1,0 +1,45 @@
+extends layout
+
+block content
+  .hotel-detail
+    .hotel-detail__image
+      img(src=`/images/${hotel.image}` alt=hotel.name)
+
+    .hotel-detail__content
+      .hotel-detail__header
+        h1.hotel-detail__name= hotel.name
+        .hotel-detail__rating
+          each star in [1,2,3,4,5]
+            i(class=star <= hotel.rating ? 'fas fa-star' : 'far fa-star')
+          span= hotel.rating
+
+      .hotel-detail__location
+        i.fas.fa-map-marker-alt
+        span= hotel.city
+
+      .hotel-detail__price
+        span.hotel-detail__price-amount £#{hotel.price}
+        span.hotel-detail__price-period / night
+
+      p.hotel-detail__description= hotel.description
+
+      .hotel-detail__features
+        .hotel-detail__feature
+          i.fas.fa-wifi
+          span Free WiFi
+        .hotel-detail__feature
+          i.fas.fa-parking
+          span Free Parking
+        .hotel-detail__feature
+          i.fas.fa-swimming-pool
+          span Swimming Pool
+        .hotel-detail__feature
+          i.fas.fa-utensils
+          span Restaurant
+
+      a.btn--book-now(href=`/book/${hotel.id}`) Book Now
+
+  .hotel-detail__back
+    a(href="/")
+      i.fas.fa-arrow-left
+      |  Back to all hotels

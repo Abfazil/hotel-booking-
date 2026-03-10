@@ -1,0 +1,54 @@
+extends layout
+
+block content
+  .booking-page
+    .booking-card
+      h2.booking-title Book Your Stay
+      .booking-hotel
+        i.fas.fa-hotel
+        span= hotel.name
+
+      .booking-location
+        i.fas.fa-map-marker-alt
+        span= hotel.city
+
+      .booking-price
+        span £#{hotel.price} / night
+
+      form.booking-form(method="POST" action=`/book/${hotel.id}`)
+        .form-group
+          label Check In Date
+          input(
+            type="date"
+            name="checkin_date"
+            required
+            min=new Date().toISOString().split('T')[0]
+          )
+
+        .form-group
+          label Check Out Date
+          input(
+            type="date"
+            name="checkout_date"
+            required
+            min=new Date().toISOString().split('T')[0]
+          )
+
+        .booking-summary
+          p.booking-summary__title Booking Summary
+          .booking-summary__row
+            span Hotel
+            strong= hotel.name
+          .booking-summary__row
+            span Location
+            strong= hotel.city
+          .booking-summary__row
+            span Price
+            strong £#{hotel.price} / night
+
+        button.btn--auth(type="submit") Confirm Booking
+
+      .auth-footer
+        a(href=`/hotel/${hotel.id}`)
+          i.fas.fa-arrow-left
+          |  Back to hotel

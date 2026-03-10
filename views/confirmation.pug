@@ -1,0 +1,30 @@
+extends layout
+
+block content
+  .confirmation-page
+    .confirmation-card
+      .confirmation-icon
+        i.fas.fa-check-circle
+
+      h2.confirmation-title Booking Confirmed!
+      p.confirmation-subtitle
+        | Thank you for booking with HotelEase.
+        br
+        | Your reservation has been successfully confirmed.
+
+      .confirmation-details
+        .confirmation-detail
+          i.fas.fa-envelope
+          span A confirmation email will be sent shortly
+
+        .confirmation-detail
+          i.fas.fa-calendar-check
+          span Your booking is now active
+
+        .confirmation-detail
+          i.fas.fa-headset
+          span 24/7 customer support available
+
+      .confirmation-actions
+        a.btn--primary(href="/") Back to Home
+        a.btn--outline(href="/login") My Bookings

@@ -1,0 +1,41 @@
+mixin hotelCard(hotel)
+  article.hotel-card
+    .hotel-card__header
+      span.hotel-card__name= hotel.name
+      button.hotel-card__fav(aria-label="Add to favourites")
+        i.far.fa-heart
+
+    .hotel-card__image
+      img(src=`/images/${hotel.image}` alt=hotel.name)
+
+    .hotel-card__footer
+      span.hotel-card__price
+        strong £#{hotel.price}
+        | / night
+      a.btn--book(href=`/hotel/${hotel.id}`) Book Now
+
+mixin featureStep(icon, title, desc)
+  .feature-step
+    .feature-step__icon
+      i(class=`fas fa-${icon}`)
+    h3.feature-step__title= title
+    p.feature-step__desc= desc
+
+mixin testimonialCard(name, location, rating, quote)
+  article.testimonial-card
+    .testimonial-card__author
+      .testimonial-card__avatar
+        i.fas.fa-user
+      .testimonial-card__info
+        strong= name
+        span= location
+      span.testimonial-card__rating= rating
+    p.testimonial-card__quote= quote
+
+mixin whyFeature(icon, title, desc)
+  .why-feature
+    .why-feature__icon
+      i(class=`fas fa-${icon}`)
+    div
+      h4.why-feature__title= title
+      p.why-feature__desc= desc
