@@ -1,0 +1,53 @@
+//- views/partials/mixins.pug
+//- Pug Mixins — reusable component functions
+//- Usage: +hotelCard(hotel)  |  +featureStep(icon, title, desc)
+
+//- ── Hotel Card ────────────────────────────────────────────────────────────
+mixin hotelCard(hotel)
+  article.hotel-card
+    .hotel-card__header
+      span.hotel-card__name= hotel.name
+      button.hotel-card__fav(aria-label="Add to favourites" type="button" data-fav-toggle)
+        i.far.fa-heart
+
+    .hotel-card__image
+      if hotel.image
+        img.hotel-card__img(src=hotel.image alt=hotel.name loading="lazy")
+      else
+        i.fas.fa-image.hotel-card__placeholder-icon
+
+    .hotel-card__footer
+      span.hotel-card__price
+        strong $#{hotel.price.toFixed(2)}
+        | / day
+      a.btn--book(href="#") Book Now
+
+//- ── Feature Step ──────────────────────────────────────────────────────────
+mixin featureStep(icon, title, desc)
+  .feature-step
+    .feature-step__icon
+      i(class=`fas fa-${icon}`)
+    h3.feature-step__title= title
+    p.feature-step__desc= desc
+
+//- ── Testimonial Card ──────────────────────────────────────────────────────
+mixin testimonialCard(name, location, rating, quote)
+  article.testimonial-card
+    .testimonial-card__author
+      .testimonial-card__avatar
+        i.fas.fa-user
+      .testimonial-card__info
+        strong= name
+        span= location
+      span.testimonial-card__rating= rating
+
+    p.testimonial-card__quote= quote
+
+//- ── Why-Choose-Us Feature ─────────────────────────────────────────────────
+mixin whyFeature(icon, title, desc)
+  .why-feature
+    .why-feature__icon
+      i(class=`fas fa-${icon}`)
+    div
+      h4.why-feature__title= title
+      p.why-feature__desc= desc
