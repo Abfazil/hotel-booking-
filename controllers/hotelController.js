@@ -1,5 +1,3 @@
-// controllers/hotelController.js — Request handlers (OOP)
-
 class HotelController {
   constructor({ hotelModel }) {
     this.hotelModel = hotelModel;
