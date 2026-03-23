@@ -1,144 +1,159 @@
-# HotelEase — Pug Website Guide
+# HotelEase
 
-## What is Pug?
-Pug (formerly Jade) is a **template engine** for Node.js. Instead of writing raw HTML,
-you write indentation-based syntax that compiles INTO HTML. Express.js renders it server-side.
+HotelEase is a Node.js + Express + Pug hotel booking UI with:
+- MVC-style backend structure (`models`, `controllers`, `routes`)
+- MySQL database
+- phpMyAdmin for DB inspection
+- Docker Compose setup for app + DB + phpMyAdmin
 
----
+## Tech Stack
+
+- Node.js
+- Express
+- Pug
+- MySQL (`mysql2`)
+- Docker + Docker Compose
+- phpMyAdmin
 
 ## Project Structure
 
-```
+```text
 hotelease/
-├── server.js               ← Node.js / Express entry point
-├── package.json            ← Dependencies list
-├── views/                  ← All Pug templates
-│   ├── layout.pug          ← Base HTML shell (nav + footer shared here)
-│   ├── index.pug           ← Home page (extends layout)
-│   └── partials/
-│       ├── nav.pug         ← Navigation component
-│       ├── footer.pug      ← Footer component
-│       └── mixins.pug      ← Reusable component functions (hotel card, etc.)
-└── public/                 ← Static files served as-is
-    ├── css/style.css       ← All styles
-    └── js/main.js          ← Client-side interactivity
+├── server.js
+├── db.js
+├── package.json
+├── Dockerfile
+├── docker-compose.yml
+├── .env
+├── controllers/
+│   ├── hotelController.js
+│   └── authController.js
+├── models/
+│   └── hotelModel.js
+├── routes/
+│   ├── hotelRoutes.js
+│   └── authRoutes.js
+├── mysql-init/
+│   └── 002_sd2-db_dump.sql
+├── public/
+│   ├── css/style.css
+│   ├── js/main.js
+│   └── images/
+└── views/
+    ├── layout.pug
+    ├── index.pug
+    ├── hotels-list.pug
+    ├── hotel-detail.pug
+    ├── login.pug
+    ├── register.pug
+    └── partials/
 ```
 
----
+## Environment Variables
 
-## How to Run (Step-by-Step)
+Defined in `.env`:
 
-### Step 1 — Install Node.js
-Download from https://nodejs.org (choose LTS version)
-
-Verify:
-```bash
-node --version    # e.g. v20.11.0
-npm --version     # e.g. 10.2.4
+```env
+DB_HOST=mysql
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=rootpassword
+DB_NAME=sd2-db
+PORT=3000
 ```
 
-### Step 2 — Install Dependencies
+## Run with Docker (Recommended)
+
+### 1) Build and start all services
+
 ```bash
-cd hotelease
+docker compose up --build
+```
+
+### 2) Access services
+
+- App: `http://localhost:3000`
+- phpMyAdmin: `http://localhost:8080`
+  - Username: `root`
+  - Password: `rootpassword`
+
+### 3) Database initialization
+
+The SQL dump at `mysql-init/002_sd2-db_dump.sql` is auto-imported by MySQL on **first container initialization**.
+
+If you already had old MySQL data volume, reinitialize once:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+## Run Locally (Without Docker)
+
+### 1) Install dependencies
+
+```bash
 npm install
 ```
-This reads package.json and installs Express + Pug into node_modules/
 
-### Step 3 — Start the Server
+### 2) Start server
+
 ```bash
-node server.js
-```
-You should see: ✅  HotelEase running → http://localhost:3000
-
-### Step 4 — View in Browser
-Open: http://localhost:3000
-
----
-
-## How Pug Works (Key Concepts)
-
-### 1. Indentation = Nesting (NO closing tags!)
-```pug
-nav
-  ul
-    li
-      a(href="/") Home
-```
-Compiles to:
-```html
-<nav><ul><li><a href="/">Home</a></li></ul></nav>
+npm start
 ```
 
-### 2. Attributes in Parentheses
-```pug
-a(href="/" class="active") Home
-img(src="/img/hotel.jpg" alt="Hotel")
-```
+Or development mode:
 
-### 3. extends + block (Layout Inheritance)
-```pug
-// layout.pug
-html
-  body
-    block content   ← placeholder
-
-// index.pug
-extends layout
-block content
-  h1 Hello World   ← fills the placeholder
-```
-
-### 4. include (Partials)
-```pug
-include partials/nav     ← pastes nav.pug content here
-include partials/footer
-```
-
-### 5. mixin (Reusable Components — like functions)
-```pug
-// Define once in mixins.pug
-mixin hotelCard(hotel)
-  article.hotel-card
-    h3= hotel.name
-
-// Call anywhere with +
-+hotelCard(hotel)
-```
-
-### 6. each (Loops from server data)
-```pug
-each hotel in hotels
-  +hotelCard(hotel)
-```
-`hotels` is passed from server.js: `res.render('index', { hotels: [...] })`
-
-### 7. CSS Classes & IDs
-```pug
-section#home.hero          → <section id="home" class="hero">
-div.card.card--active      → <div class="card card--active">
-```
-
----
-
-## Development Tips
-
-### Auto-restart on file changes (install nodemon)
 ```bash
 npm run dev
 ```
 
-### Adding a New Page
-1. Create `views/about.pug` extending layout
-2. Add route in server.js: `app.get('/about', (req, res) => res.render('about'))`
-3. Link to it: `a(href="/about") About`
+> Note: If local MySQL is not reachable, the app uses fallback in-memory hotel data so UI pages still render.
 
----
+## Available Routes
 
-## Tech Stack Summary
-| Tool    | Role                              |
-|---------|-----------------------------------|
-| Node.js | JavaScript runtime                |
-| Express | Web server / routing              |
-| Pug     | HTML template engine              |
-| CSS     | Styling (no framework needed)     |
-| JS      | Browser-side interactions         |
+- `GET /` - Home page
+- `GET /hotels` - Hotels listing
+- `GET /hotels/:id` - Hotel details
+- `GET /login` - Login page
+- `GET /register` - Registration page
+
+## Database Notes
+
+- Primary DB for this project: `sd2-db`
+- Main UI query currently reads from:
+  - `hotels` (`hotel_id`, `hotel_name`, `city`, `country`, `rating`)
+  - `rooms` (`price_per_night`) for pricing
+- If DB returns no rows or is unavailable, model fallback is used.
+
+## Troubleshooting
+
+### App starts but no DB data in phpMyAdmin
+
+Likely old Docker volume. Recreate containers with:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+### `getaddrinfo EAI_AGAIN mysql` when running locally
+
+`DB_HOST=mysql` only resolves inside Docker network. For local host execution, change `.env`:
+
+```env
+DB_HOST=localhost
+```
+
+### Port conflict on 3000
+
+Set a different port in `.env`:
+
+```env
+PORT=3001
+```
+
+## Scripts
+
+- `npm start` - start server with Node
+- `npm run dev` - start server with Nodemon

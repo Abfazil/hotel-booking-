@@ -2,18 +2,7 @@
 class HotelModel {
   constructor({ pool } = {}) {
     this.pool = pool || null;
-
-    this.baseHotels = [
-      { name: 'Ocean Breeze Hotel', price: 129.99, rating: 4.6, location: 'Miami, USA', image: null },
-      { name: 'City Lights Residence', price: 99.5, rating: 4.3, location: 'London, UK', image: null },
-      { name: 'Mountain View Lodge', price: 109.0, rating: 4.5, location: 'Denver, USA', image: null },
-      { name: 'Royal Garden Suites', price: 149.25, rating: 4.7, location: 'Paris, France', image: null },
-      { name: 'Sunset Terrace Inn', price: 89.75, rating: 4.2, location: 'Los Angeles, USA', image: null },
-      { name: 'The Quiet Harbor Hotel', price: 119.4, rating: 4.4, location: 'Amsterdam, NL', image: null },
-      { name: 'Emerald Forest Retreat', price: 139.0, rating: 4.6, location: 'Zurich, CH', image: null },
-      { name: 'Aurora Skyline Stay', price: 104.99, rating: 4.1, location: 'New York, USA', image: null },
-    ];
-
+    
     this._initPromise = null;
   }
 
