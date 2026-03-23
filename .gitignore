@@ -1,0 +1,22 @@
+# Node dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+*.log
+
+# Local environment variables
+.env
+.env.*
+!.env.example
+
+
+# Build outputs
+dist/
+build/
+
+# text editor settings
+.vscode/
+*.swp
+*~
+
