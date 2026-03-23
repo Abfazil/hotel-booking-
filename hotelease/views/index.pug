@@ -1,0 +1,165 @@
+//- views/index.pug
+//- Home page — extends the base layout and fills the `content` block
+
+extends layout
+
+//- Import all reusable mixins
+include partials/mixins
+
+block content
+
+  //- ══════════════════════════════════════════════════════════════════════
+  //- SECTION 1 — Hero
+  //- ══════════════════════════════════════════════════════════════════════
+  section#home.hero
+    .hero__content
+      p.hero__eyebrow Neque porro quisquam est qui dolorem ipsum quia
+      h1.hero__title
+        | Lorem Ipsum Neque
+        br
+        | Porro Qui Dolorem
+      p.hero__body
+        | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        | tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        | veniam, quis nostrud exercitation
+      .hero__actions
+        a.btn--primary(href="#") Booking Now
+        a.btn--outline(href="/hotels") See all hotels
+
+    .hero__image
+      .hero__image-placeholder
+        i.fas.fa-image
+
+  //- ── Search Bar ──────────────────────────────────────────────────────────
+  .search-bar
+    .search-bar__group
+      label.search-bar__label Check in
+      .search-bar__fields
+        .search-bar__field
+          span.search-bar__field-label Locations
+          select(aria-label="Select your city")
+            option Select your city
+            option Paris
+            option London
+            option New York
+        .search-bar__field
+          span.search-bar__field-label Date
+          select(aria-label="Check-in date")
+            option Select your date
+        .search-bar__field
+          span.search-bar__field-label Time
+          select(aria-label="Check-in time")
+            option Select your time
+
+    .search-bar__divider
+
+    .search-bar__group
+      label.search-bar__label Check out
+      .search-bar__fields
+        .search-bar__field
+          span.search-bar__field-label Date
+          select(aria-label="Check-out date")
+            option Select your date
+        .search-bar__field
+          span.search-bar__field-label Time
+          select(aria-label="Check-out time")
+            option Select your time
+
+    button.btn--search(type="button") Search
+
+  //- ══════════════════════════════════════════════════════════════════════
+  //- SECTION 2 — How It Works
+  //- ══════════════════════════════════════════════════════════════════════
+  section#how.how-it-works
+    .section-header
+      h2.section-header__title Lorem Ipsum passage
+      p.section-header__subtitle
+        | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+        br
+        | do eiusmod tempor incididunt ut labore et
+
+    .how-it-works__steps
+      //- Using the featureStep mixin defined in mixins.pug
+      +featureStep("map-marker-alt", "Choose Location", "Aliquam erat volutpat. Integer malesuada turpis id fringilla suscipit. Maecenas ultrices, orci vitae convallis mattis.")
+
+      .how-it-works__connector
+
+      +featureStep("calendar-alt", "Pick-up Date", "Aliquam erat volutpat. Integer malesuada turpis id fringilla suscipit. Maecenas ultrices, orci vitae convallis mattis.")
+
+      .how-it-works__connector
+
+      +featureStep("car", "Book your hotel", "Aliquam erat volutpat. Integer malesuada turpis id fringilla suscipit. Maecenas ultrices, orci vitae convallis mattis.")
+
+  //- ══════════════════════════════════════════════════════════════════════
+  //- SECTION 3 — Hotel Listings
+  //- ══════════════════════════════════════════════════════════════════════
+  section#hotels.hotels
+    .section-header
+      h2.section-header__title Lorem ipsum dolor sit amet
+      p.section-header__subtitle
+        | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+        br
+        | do eiusmod tempor incididunt ut labore et
+
+    //- Tab navigation
+    .hotels__tabs
+      button.hotels__tab.hotels__tab--active(data-tab="popular") Popular
+      button.hotels__tab(data-tab="executive") Executive Room
+      button.hotels__tab(data-tab="ensuite") En suite Room
+      button.hotels__tab(data-tab="penthouse") Penthouse
+
+    //- Hotel grid — `hotels` array is passed from server.js
+    .hotels__grid
+      each hotel in hotels
+        +hotelCard(hotel)
+
+    .hotels__footer
+      button.btn--show-more(type="button") Show more hotels
+      span.hotels__count 120 hotels
+
+  //- ══════════════════════════════════════════════════════════════════════
+  //- SECTION 4 — Why Choose Us
+  //- ══════════════════════════════════════════════════════════════════════
+  section#why.why-choose
+    .section-header
+      h2.section-header__title Lorem ipsum dolor sit
+      p.section-header__subtitle
+        | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+        br
+        | do eiusmod tempor incididunt ut labore e
+
+    .why-choose__layout
+      .why-choose__image
+        .why-choose__image-placeholder
+          i.fas.fa-image
+
+      .why-choose__features
+        +whyFeature("phone", "Customer Support", "Aliquam erat volutpat. Integer malesuada turpis id fringilla suscipit. Maecenas ultrices.")
+        +whyFeature("tag", "Best Price Guaranteed", "Aliquam erat volutpat. Integer malesuada turpis id fringilla suscipit. Maecenas ultrices.")
+        +whyFeature("map-marker-alt", "Many Location", "Aliquam erat volutpat. Integer malesuada turpis id fringilla suscipit. Maecenas ultrices.")
+
+  //- ── Partner / Gallery Carousel ─────────────────────────────────────────
+  .gallery
+    .gallery__item.gallery__item--active
+      i.fas.fa-image
+    .gallery__item
+      i.fas.fa-image
+
+  //- ══════════════════════════════════════════════════════════════════════
+  //- SECTION 5 — Testimonials
+  //- ══════════════════════════════════════════════════════════════════════
+  section#testimonial.testimonials
+    .section-header
+      h2.section-header__title
+        | Trusted by Thousands of
+        br
+        | Happy Customers
+      p.section-header__subtitle
+        | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+        br
+        | do eiusmod tempor incididunt ut lab
+
+    .testimonials__grid
+      +testimonialCard("Viezh Robert", "Warsaw, Poland", "4.5", "\"Wow... I am very happy to use this VPN, it turned out to be more than my expectations and so far there have been no problems. HotelEase always the best\".")
+      +testimonialCard("Viezh Robert", "Warsaw, Poland", "4.5", "\"Wow... I am very happy to use this VPN, it turned out to be more than my expectations and so far there have been no problems. HotelEase always the best\".")
+      +testimonialCard("Viezh Robert", "Warsaw, Poland", "4.5", "\"Wow... I am very happy to use this VPN, it turned out to be more than my expectations and so far there have been no problems. HotelEase always the best\".")
