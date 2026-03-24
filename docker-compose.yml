@@ -1,13 +1,10 @@
-version: "3.9"
-
 services:
   app:
     build: .
-    container_name: node_app
     ports:
       - "3000:3000"
     env_file:
-    - .env
+      - .env
     depends_on:
       mysql:
         condition: service_healthy
@@ -16,7 +13,6 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: mysql_db
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: sd2-db
@@ -35,7 +31,6 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin_ui
     ports:
       - "8080:80"
     environment:
@@ -53,7 +48,7 @@ volumes:
   mysql_data:
 
 networks:
-  app-network:  
+  app-network:
 
 
 
@@ -66,3 +61,8 @@ networks:
 
 
 
+
+
+
+
+  
