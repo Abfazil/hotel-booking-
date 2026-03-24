@@ -128,7 +128,7 @@ Consequences are determined based on severity, intent, impact, and frequency of 
 If you experience or witness behavior that violates this Code of Conduct, please report it promptly.
 
 Reporting contact:
-📧 support@hotelease.com
+support@hotelease.com
 
 (Replace with your official conduct or HR contact)
 

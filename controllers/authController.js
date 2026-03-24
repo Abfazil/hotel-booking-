@@ -1,4 +1,3 @@
-
 class AuthController {
   constructor() {
     this.login = this.login.bind(this);

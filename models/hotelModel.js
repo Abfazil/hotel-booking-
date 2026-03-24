@@ -1,4 +1,3 @@
-
 class HotelModel {
   constructor({ pool } = {}) {
     this.pool = pool || null;

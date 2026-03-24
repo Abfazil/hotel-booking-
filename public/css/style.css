@@ -1,9 +1,4 @@
-/* ============================================================
-   public/css/style.css — HotelEase Design System
-   Organized by: Variables → Reset → Components → Sections
-   ============================================================ */
-
-/* ── 1. Design Tokens (CSS Variables) ─────────────────────── */
+/*Design Tokens (CSS Variables)*/
 :root {
   --color-navy:      #1d3557;
   --color-navy-mid:  #2d4a6e;
@@ -29,7 +24,7 @@
   --transition: 0.25s ease;
 }
 
-/* ── 2. Reset & Base ────────────────────────────────────────── */
+/* Reset & Base */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
@@ -49,7 +44,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 select { font-family: inherit; border: none; background: transparent; cursor: pointer; outline: none; font-size: 13px; color: var(--color-muted); }
 img { max-width: 100%; display: block; }
 
-/* ── 3. Utility Classes ─────────────────────────────────────── */
+/* Utility Classes */
 .section-header {
   text-align: center;
   margin-bottom: 3rem;
@@ -70,7 +65,7 @@ img { max-width: 100%; display: block; }
   margin: 0 auto;
 }
 
-/* ── 4. Buttons ─────────────────────────────────────────────── */
+/* Buttons */
 .btn--primary {
   display: inline-block;
   padding: 0.65rem 1.6rem;
@@ -139,7 +134,7 @@ img { max-width: 100%; display: block; }
 }
 .btn--show-more:hover { color: var(--color-navy); }
 
-/* ── 5. Navigation ──────────────────────────────────────────── */
+/* Navigation */
 .navbar {
   display: flex;
   align-items: center;
@@ -179,7 +174,7 @@ img { max-width: 100%; display: block; }
   gap: 1rem;
 }
 
-/* ── 6. Hero Section ────────────────────────────────────────── */
+/* Hero Section  */
 .hero {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -263,7 +258,7 @@ img { max-width: 100%; display: block; }
   pointer-events: none;
 }
 
-/* ── 7. Search Bar ──────────────────────────────────────────── */
+/* Search Bar */
 .search-bar {
   display: flex;
   align-items: center;
@@ -315,7 +310,7 @@ img { max-width: 100%; display: block; }
   background: #d8e0ea;
 }
 
-/* ── 8. How It Works ────────────────────────────────────────── */
+/* How It Works */
 .how-it-works {
   padding: 6rem 4rem 4rem;
   background: var(--color-white);
@@ -368,7 +363,7 @@ img { max-width: 100%; display: block; }
   line-height: 1.6;
 }
 
-/* ── 9. Hotel Cards & Grid ──────────────────────────────────── */
+/* Hotel Cards & Grid */
 .hotels {
   padding: 5rem 4rem;
   background: #f8fafd;
@@ -488,7 +483,7 @@ img { max-width: 100%; display: block; }
   color: var(--color-muted);
 }
 
-/* ── 14. Listing Page (Grid / List View) ─────────────────────── */
+/* Listing Page (grid/ list view) */
 .listing {
   padding: 4.5rem 4rem 5rem;
   background: #f8fafd;
@@ -773,7 +768,7 @@ img { max-width: 100%; display: block; }
   }
 }
 
-/* ── 15. Hotel Detail Page ───────────────────────────────────── */
+/* Hotel Detail Page */
 .hotel-detail {
   padding: 4rem 4rem 5rem;
   background: var(--color-white);
@@ -1042,7 +1037,7 @@ img { max-width: 100%; display: block; }
   100% { transform: scale(1); }
 }
 
-/* ── 16. Auth Pages (Login / Register) ───────────────────────── */
+/* Auth Pages (login/register) */
 .auth {
   padding: 5rem 4rem;
   background: #f8fafd;
@@ -1129,7 +1124,7 @@ img { max-width: 100%; display: block; }
   text-decoration: underline;
 }
 
-/* ── 10. Why Choose Us ──────────────────────────────────────── */
+/* Why Choose Us */
 .why-choose {
   padding: 5rem 4rem;
   background: var(--color-white);
@@ -1216,7 +1211,7 @@ img { max-width: 100%; display: block; }
   color: var(--color-muted);
 }
 
-/* ── 11. Gallery Strip ──────────────────────────────────────── */
+/* Gallery Strip */
 .gallery {
   display: flex;
   gap: 1.5rem;
@@ -1267,7 +1262,7 @@ img { max-width: 100%; display: block; }
   border: 2.5px solid #3b82f6;
 }
 
-/* ── 12. Testimonials ───────────────────────────────────────── */
+/* Testimonials */
 .testimonials {
   padding: 5rem 4rem;
   background: var(--color-light-bg);
@@ -1332,7 +1327,7 @@ img { max-width: 100%; display: block; }
   line-height: 1.7;
 }
 
-/* ── 13. Footer ─────────────────────────────────────────────── */
+/* Footer */
 .footer {
   background: var(--color-light-bg);
   padding: 3.5rem 4rem 1.5rem;
@@ -1418,3 +1413,167 @@ img { max-width: 100%; display: block; }
   display: flex;
   gap: 1.5rem;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
