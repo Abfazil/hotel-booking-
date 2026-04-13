@@ -9,7 +9,7 @@ class HotelController {
 
   async home(req, res, next) {
     try {
-      const hotels = await this.hotelModel.getHotels(8);
+      const hotels = await this.hotelModel.getHotels();
       res.render('index', {
         title: 'HotelEase — Find Your Perfect Stay',
         hotels,
@@ -21,7 +21,7 @@ class HotelController {
 
   async list(req, res, next) {
     try {
-      const hotels = await this.hotelModel.getHotels(12);
+      const hotels = await this.hotelModel.getHotels();
       res.render('hotels-list', {
         title: 'All Hotels — HotelEase',
         hotels,

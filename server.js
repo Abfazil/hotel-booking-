@@ -21,14 +21,20 @@ const pool = require('./db'); // currently unused by the demo model, but wired f
 const HotelModel = require('./models/hotelModel');
 const HotelController = require('./controllers/hotelController');
 const AuthController = require('./controllers/authController');
+const DisputeController = require('./controllers/controllers/DisputeController');
 
 const hotelModel = new HotelModel({ pool });
 const hotelController = new HotelController({ hotelModel });
 const authController = new AuthController();
+const disputeController = new DisputeController();
+
+// Parse URL-encoded form submissions from Pug forms.
+app.use(express.urlencoded({ extended: true }));
 
 // ── Routes (modules) ───────────────────────────────────────────────────────────
 app.use('/', require('./routes/hotelRoutes')(hotelController));
 app.use('/', require('./routes/authRoutes')(authController));
+app.use('/', require('./routes/disputeRoutes')(disputeController));
 
 // ── Error Handling ─────────────────────────────────────────────────────────────
 app.use((req, res) => {
