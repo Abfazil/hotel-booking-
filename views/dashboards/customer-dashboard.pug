@@ -1,0 +1,29 @@
+extends ../layout
+
+block content
+  section.dashboard
+    .dashboard__inner
+      .dashboard__header
+        h1.dashboard__title Customer Dashboard
+        p.dashboard__subtitle Welcome back, #{currentUser && currentUser.name ? currentUser.name : 'Guest'}.
+
+      .dashboard__grid
+        .dashboard__card
+          h2.dashboard__card-title Recent bookings
+          if bookings && bookings.length
+            ul.dashboard__list
+              each booking in bookings
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong= booking.hotelName || 'Hotel Booking'
+                    span #{booking.checkIn} to #{booking.checkOut}
+                  span.dashboard__badge= booking.status || 'Pending'
+          else
+            p.dashboard__empty No bookings found yet.
+
+        .dashboard__card
+          h2.dashboard__card-title Quick actions
+          p.dashboard__text Continue booking your next trip or raise an issue.
+          .dashboard__actions
+            a.btn--primary(href="/hotels") Browse hotels
+            a.btn--outline(href="/disputes") View disputes

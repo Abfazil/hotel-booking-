@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+  section.dashboard
+    .dashboard__inner
+      .dashboard__header
+        h1.dashboard__title Admin Dashboard
+        p.dashboard__subtitle Manage users, hotels, and disputes from one place.
+
+      .dashboard__stats
+        .dashboard__stat-card
+          p.dashboard__stat-label Total users
+          p.dashboard__stat-value= stats.totalUsers
+        .dashboard__stat-card
+          p.dashboard__stat-label Total bookings
+          p.dashboard__stat-value= stats.totalBookings
+        .dashboard__stat-card
+          p.dashboard__stat-label Total disputes
+          p.dashboard__stat-value= stats.totalDisputes
+
+      .dashboard__card
+        h2.dashboard__card-title Manage platform
+        ul.dashboard__manage
+          li
+            strong View users
+            p Track customer profiles and account status.
+          li
+            strong Manage hotels
+            p Update listings and review hotel information.
+          li
+            strong View disputes
+            p Inspect open customer disputes and resolve issues.

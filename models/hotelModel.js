@@ -59,7 +59,7 @@ class HotelModel {
 
     await this.init();
 
-    const [rows] = await this.pool.query(
+    const rows = await this.pool.query(
       `
       SELECT
         h.hotel_id AS id,

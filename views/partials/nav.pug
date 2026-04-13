@@ -6,12 +6,18 @@ nav.navbar
     a.navbar__logo(href="/") HotelEase
 
   ul.navbar__links
-    li: a.navbar__link.navbar__link--active(href="#home") Home
-    li: a.navbar__link(href="#how") How it Works
-    li: a.navbar__link(href="#booking") Booking Details
-    li: a.navbar__link(href="#why") Why Choose Us
-    li: a.navbar__link(href="#testimonial") Testimonial
+    li: a.navbar__link(href="/") Home
+    li: a.navbar__link(href="/hotels") Hotels
+    li: a.navbar__link(href="/disputes") Disputes
+    if currentUser && currentUser.role === 'admin'
+      li: a.navbar__link(href="/admin") Admin
+    else if currentUser
+      li: a.navbar__link(href="/dashboard") Dashboard
 
   .navbar__actions
-    a.btn--ghost(href="/register") Register
-    a.btn--primary(href="/login") Log In
+    if currentUser
+      span.navbar__welcome Hello, #{currentUser.name}
+      a.btn--ghost(href="/logout") Log out
+    else
+      a.btn--ghost(href="/register") Register
+      a.btn--primary(href="/login") Log In
