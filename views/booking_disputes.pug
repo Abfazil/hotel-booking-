@@ -1,0 +1,99 @@
+//- views/booking-disputes.pug
+//- Booking disputes page (report + history)
+
+extends layout
+
+block content
+
+  section.disputes
+    .disputes__inner
+
+      //- Header
+      .disputes__header
+        h1.disputes__title Booking disputes
+        p.disputes__subtitle
+          | Report an issue with your stay or track existing dispute requests.
+
+      //- Layout
+      .disputes__layout
+
+        //- LEFT: Form
+        .disputes__main
+          .disputes__card
+            h2.disputes__card-title Report a new issue
+
+            form.disputes__form(action="/disputes" method="post")
+
+              .disputes__field
+                label.disputes__label(for="bookingId") Booking ID
+                input.disputes__input#bookingId(
+                  type="text"
+                  name="bookingId"
+                  placeholder="e.g. HTL-123456"
+                  required
+                )
+
+              .disputes__field
+                label.disputes__label(for="issueType") Issue type
+                select.disputes__input#issueType(name="issueType" required)
+                  option(value="" disabled selected) Select an issue
+                  option(value="payment") Payment problem
+                  option(value="room") Room not as described
+                  option(value="cleanliness") Cleanliness issue
+                  option(value="service") Poor service
+                  option(value="other") Other
+
+              .disputes__field
+                label.disputes__label(for="description") Description
+                textarea.disputes__textarea#description(
+                  name="description"
+                  rows="5"
+                  placeholder="Tell us what went wrong..."
+                  required
+                )
+
+              .disputes__field
+                label.disputes__label(for="evidence") Upload evidence (optional)
+                input.disputes__input#evidence(
+                  type="file"
+                  name="evidence"
+                  accept="image/*"
+                )
+
+              .disputes__actions
+                button.btn--primary(type="submit") Submit dispute
+
+        //- RIGHT: Existing disputes
+        .disputes__sidebar
+          .disputes__card
+            h3.disputes__card-title Your recent disputes
+
+            if disputes && disputes.length
+              ul.disputes__list
+                each dispute in disputes
+                  li.disputes__item
+                    .disputes__item-top
+                      span.disputes__booking #{dispute.bookingId}
+                      span.disputes__status(class=`status--${dispute.status}`)
+                        | #{dispute.status}
+
+                    p.disputes__issue #{dispute.issueType}
+                    p.disputes__desc #{dispute.description}
+
+                    .disputes__meta
+                      span Opened on #{dispute.date}
+            else
+              p.disputes__empty
+                | You haven't submitted any disputes yet.
+
+          .disputes__card
+            h3.disputes__card-title Need help?
+
+            p.disputes__help-text
+              | Most issues are resolved within 24–48 hours. Our support team
+              | reviews every case carefully and may contact you for more details.
+
+            ul.disputes__help-list
+              li Keep your booking ID ready
+              li Provide clear descriptions
+              li Upload photos if possible
