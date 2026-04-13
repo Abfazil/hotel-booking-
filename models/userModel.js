@@ -123,6 +123,38 @@ class UserModel {
     const rows = await this.db.query('SELECT COUNT(*) AS total FROM users');
     return Number(rows[0]?.total || 0);
   }
+
+  async listRecentUsers(limit = 5) {
+    const parsedLimit = Number(limit);
+    const safeLimit = Number.isFinite(parsedLimit) ? Math.max(1, Math.min(parsedLimit, 50)) : 5;
+    const schema = await this.resolveSchema();
+
+    const sql = schema.isLegacy
+      ? `
+        SELECT
+          user_id AS id,
+          CONCAT(first_name, ' ', last_name) AS name,
+          email,
+          ${schema.hasRole ? 'role' : "'customer'"} AS role,
+          created_at AS createdAt
+        FROM users
+        ORDER BY user_id DESC
+        LIMIT ${safeLimit}
+      `
+      : `
+        SELECT
+          id,
+          name,
+          email,
+          role,
+          created_at AS createdAt
+        FROM users
+        ORDER BY id DESC
+        LIMIT ${safeLimit}
+      `;
+
+    return this.db.query(sql);
+  }
 }
 
 module.exports = UserModel;

@@ -30,3 +30,43 @@ block content
           li
             strong View disputes
             p Inspect open customer disputes and resolve issues.
+
+      .dashboard__grid
+        .dashboard__card
+          h2.dashboard__card-title Recent users
+          if recentUsers && recentUsers.length
+            ul.dashboard__list
+              each user in recentUsers
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong #{user.name}
+                    span #{user.email}
+                  span.dashboard__badge= user.role
+          else
+            p.dashboard__empty No users found.
+
+        .dashboard__card
+          h2.dashboard__card-title Recent bookings
+          if recentBookings && recentBookings.length
+            ul.dashboard__list
+              each booking in recentBookings
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong Booking ##{booking.id} - #{booking.hotelName || 'Hotel'}
+                    span #{booking.createdAt}
+                  span.dashboard__badge= booking.status || 'Pending'
+          else
+            p.dashboard__empty No bookings found.
+
+      .dashboard__card
+        h2.dashboard__card-title Recent disputes
+        if recentDisputes && recentDisputes.length
+          ul.dashboard__list
+            each dispute in recentDisputes
+              li.dashboard__list-item
+                .dashboard__item-main
+                  strong Dispute ##{dispute.id}
+                  span #{dispute.issue}
+                span.dashboard__badge= dispute.status || 'Open'
+        else
+          p.dashboard__empty No disputes found.
