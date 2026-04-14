@@ -71,6 +71,59 @@ block content
             | This room is perfect for slow mornings, late‑night conversations, and quiet solo
             |  moments. Add it to your favourites with the heart above and come back to it later.
 
-          p.hotel-detail__card-note
-            | The heart icon only animates on tap — no account or booking is required here.
+          if currentUser && currentUser.role === 'customer'
+            form.hotel-detail__booking-form(action=`/hotels/${hotel.id}/book` method="POST")
+              .hotel-detail__booking-grid
+                .hotel-detail__field
+                  label.hotel-detail__field-label(for="checkInDate") Check-in date
+                  input.hotel-detail__field-input#checkInDate(type="date" name="checkInDate" required)
+                .hotel-detail__field
+                  label.hotel-detail__field-label(for="guests") Guests
+                  input.hotel-detail__field-input#guests(type="number" name="guests" min="1" value="1" required)
+
+                .hotel-detail__field
+                  label.hotel-detail__field-label(for="nights") Number of nights
+                  input.hotel-detail__field-input#nights(type="number" name="nights" min="1" value="1" required)
+                .hotel-detail__field
+                  label.hotel-detail__field-label(for="days") Number of days
+                  input.hotel-detail__field-input#days(type="number" name="days" min="1" value="2" required)
+
+                .hotel-detail__field
+                  label.hotel-detail__field-label(for="roomType") Room type
+                  select.hotel-detail__field-input#roomType(name="roomType" required)
+                    option(value="Standard room") Standard room
+                    option(value="Deluxe room") Deluxe room
+                    option(value="Suite") Suite
+                .hotel-detail__field
+                  label.hotel-detail__field-label(for="mealPlan") Meal option
+                  select.hotel-detail__field-input#mealPlan(name="mealPlan" required)
+                    option(value="Breakfast only") Breakfast only
+                    option(value="Half board") Half board
+                    option(value="Full board") Full board
+
+              .hotel-detail__field
+                label.hotel-detail__field-label Payment option (static)
+                .hotel-detail__payment-options
+                  label.hotel-detail__payment-choice
+                    input(type="radio" name="paymentMethod" value="Pay at hotel" checked)
+                    span Pay at hotel
+                  label.hotel-detail__payment-choice
+                    input(type="radio" name="paymentMethod" value="Card at check-in")
+                    span Card at check-in
+                  label.hotel-detail__payment-choice
+                    input(type="radio" name="paymentMethod" value="Bank transfer proof")
+                    span Bank transfer proof
+
+              .hotel-detail__field
+                label.hotel-detail__field-label(for="specialRequests") Special requests
+                textarea.hotel-detail__field-input#specialRequests(name="specialRequests" rows="3" placeholder="Any food allergy, high floor preference, extra bed, etc.")
+
+              button.btn--primary.hotel-detail__book-btn(type="submit")
+                i.fas.fa-calendar-check
+                |  Book Hotel
+            p.hotel-detail__card-note
+              | Book this hotel now and you will be redirected to the thank you page.
+          else
+            p.hotel-detail__card-note
+              | Please log in as a customer to book this hotel.
 

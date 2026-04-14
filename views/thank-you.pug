@@ -1,0 +1,51 @@
+extends layout
+
+block content
+  section.thank-you
+    .thank-you__inner
+      .thank-you__card
+        .thank-you__icon
+          i.fas.fa-circle-check
+        h1.thank-you__title Thank you for your booking!
+        p.thank-you__subtitle
+          | Your reservation has been received successfully.
+        .thank-you__details
+          p
+            strong Customer:
+            |  #{booking.customerName}
+          p
+            strong Hotel:
+            |  #{booking.hotelName}
+          p
+            strong Location:
+            |  #{booking.location}
+          p
+            strong Check-in:
+            |  #{booking.checkInDate}
+          p
+            strong Stay:
+            |  #{booking.days} days / #{booking.nights} nights
+          p
+            strong Guests:
+            |  #{booking.guests}
+          p
+            strong Room type:
+            |  #{booking.roomType}
+          p
+            strong Meal plan:
+            |  #{booking.mealPlan}
+          p
+            strong Payment option:
+            |  #{booking.paymentMethod}
+          p
+            strong Special requests:
+            |  #{booking.specialRequests}
+          p
+            strong Price:
+            |  $#{booking.price.toFixed(0)} / night
+          p
+            strong Estimated total:
+            |  $#{booking.totalCost.toFixed(0)}
+        .thank-you__actions
+          a.btn--primary(href="/hotels") Browse More Hotels
+          a.btn--outline(href="/dashboard") Go to Dashboard

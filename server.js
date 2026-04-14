@@ -54,7 +54,7 @@ const DisputeController = require('./controllers/controllers/DisputeController')
 
 const hotelModel = new HotelModel({ pool });
 const userModel = new UserModel({ db: pool });
-const hotelController = new HotelController({ hotelModel });
+const hotelController = new HotelController({ hotelModel, db: pool });
 const authController = new AuthController({ userModel });
 const dashboardController = new DashboardController({ db: pool, userModel });
 const disputeController = new DisputeController();

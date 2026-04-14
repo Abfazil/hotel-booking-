@@ -31,6 +31,7 @@ class DashboardController {
       res.render('dashboards/customer-dashboard', {
         title: 'My Dashboard — HotelEase',
         bookings,
+        recentBooking: req.session.recentBooking || null,
       });
     } catch (err) {
       next(err);

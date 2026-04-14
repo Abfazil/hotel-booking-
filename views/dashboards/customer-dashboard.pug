@@ -9,6 +9,23 @@ block content
 
       .dashboard__grid
         .dashboard__card
+          h2.dashboard__card-title Most recent booking
+          if recentBooking
+            ul.dashboard__list
+              li.dashboard__list-item
+                .dashboard__item-main
+                  strong= recentBooking.hotelName || 'Hotel Booking'
+                  span #{recentBooking.days} days / #{recentBooking.nights} nights · #{recentBooking.guests} guest(s)
+                span.dashboard__badge Confirmed
+              li.dashboard__list-item
+                .dashboard__item-main
+                  strong Meal and payment
+                  span #{recentBooking.mealPlan} · #{recentBooking.paymentMethod}
+                span.dashboard__badge $#{recentBooking.totalCost.toFixed(0)}
+          else
+            p.dashboard__empty You have not made a recent booking yet.
+
+        .dashboard__card
           h2.dashboard__card-title Recent bookings
           if bookings && bookings.length
             ul.dashboard__list
