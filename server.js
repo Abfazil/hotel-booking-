@@ -18,6 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Parse URL-encoded form submissions from Pug forms.
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // ── Sessions ──────────────────────────────────────────────────────────────────
 app.use(
@@ -53,6 +54,8 @@ const DashboardController = require('./controllers/dashboardController');
 const DisputeController = require('./controllers/controllers/DisputeController');
 //Reviews
 const ReviewModel      = require('./models/reviewModel');
+const FavouriteModel = require('./models/favouriteModel');
+const FavouriteController = require('./controllers/favouriteController');
 
 const hotelModel = new HotelModel({ pool });
 const reviewModel = new ReviewModel({ pool });
@@ -61,12 +64,15 @@ const hotelController = new HotelController({ hotelModel, reviewModel, db: pool 
 const authController = new AuthController({ userModel });
 const dashboardController = new DashboardController({ db: pool, userModel });
 const disputeController = new DisputeController();
+const favouriteModel = new FavouriteModel({ db: pool, hotelModel });
+const favouriteController = new FavouriteController({ favouriteModel });
 
 // ── Routes (modules) ───────────────────────────────────────────────────────────
 app.use('/', require('./routes/hotelRoutes')(hotelController));
 app.use('/', require('./routes/authRoutes')(authController));
 app.use('/', require('./routes/dashboardRoutes')(dashboardController));
 app.use('/', require('./routes/disputeRoutes')(disputeController));
+app.use('/', require('./routes/favouriteRoutes')(favouriteController));
 
 
 // ── Error Handling ─────────────────────────────────────────────────────────────
