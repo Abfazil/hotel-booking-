@@ -51,10 +51,13 @@ const HotelController = require('./controllers/hotelController');
 const AuthController = require('./controllers/authController');
 const DashboardController = require('./controllers/dashboardController');
 const DisputeController = require('./controllers/controllers/DisputeController');
+//Reviews
+const ReviewModel      = require('./models/reviewModel');
 
 const hotelModel = new HotelModel({ pool });
+const reviewModel = new ReviewModel({ pool });
 const userModel = new UserModel({ db: pool });
-const hotelController = new HotelController({ hotelModel, db: pool });
+const hotelController = new HotelController({ hotelModel, reviewModel, db: pool });
 const authController = new AuthController({ userModel });
 const dashboardController = new DashboardController({ db: pool, userModel });
 const disputeController = new DisputeController();
@@ -64,6 +67,7 @@ app.use('/', require('./routes/hotelRoutes')(hotelController));
 app.use('/', require('./routes/authRoutes')(authController));
 app.use('/', require('./routes/dashboardRoutes')(dashboardController));
 app.use('/', require('./routes/disputeRoutes')(disputeController));
+
 
 // ── Error Handling ─────────────────────────────────────────────────────────────
 app.use((req, res) => {

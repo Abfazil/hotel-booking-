@@ -1,7 +1,8 @@
 class HotelController {
-  constructor({ hotelModel, db }) {
+  constructor({ hotelModel, db, reviewModel }) {
     this.hotelModel = hotelModel;
     this.db = db;
+    this.reviewModel = reviewModel;
 
     this.home = this.home.bind(this);
     this.list = this.list.bind(this);
@@ -44,9 +45,15 @@ class HotelController {
         return;
       }
 
+      const reviews =
+        this.reviewModel && typeof this.reviewModel.getReviewsByHotel === 'function'
+          ? await this.reviewModel.getReviewsByHotel(id, 9)
+          : [];
+
       res.render('hotel-detail', {
         title: `Stay at ${hotel.name} — HotelEase`,
         hotel,
+        reviews,
       });
     } catch (err) {
       next(err);
