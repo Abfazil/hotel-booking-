@@ -7,8 +7,18 @@ mixin hotelCard(hotel)
   article.hotel-card
     .hotel-card__header
       span.hotel-card__name= hotel.name
-      button.hotel-card__fav(aria-label="Add to favourites" type="button" data-fav-toggle)
-        i.far.fa-heart
+      - const favActive = Boolean(hotel && hotel.isFavourite)
+      button.hotel-card__fav(
+        aria-label="Add to favourites"
+        type="button"
+        data-fav-toggle
+        data-hotel-id=hotel.id
+        class=favActive ? 'is-active' : ''
+      )
+        if favActive
+          i.fas.fa-heart
+        else
+          i.far.fa-heart
 
     .hotel-card__image
       if hotel.image
@@ -20,7 +30,7 @@ mixin hotelCard(hotel)
       span.hotel-card__price
         strong $#{hotel.price.toFixed(2)}
         | / day
-      a.btn--book(href="#") Book Now
+      a.btn--book(href=`/hotels/${hotel.id}`) View
 
 //- ── Feature Step ──────────────────────────────────────────────────────────
 mixin featureStep(icon, title, desc)

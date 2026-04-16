@@ -22,13 +22,51 @@ document.addEventListener('DOMContentLoaded', () => {
   const favBtns = document.querySelectorAll('[data-fav-toggle]');
 
   favBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const icon = btn.querySelector('i');
       if (!icon) return;
 
-      icon.classList.toggle('far');
-      icon.classList.toggle('fas');
-      btn.classList.toggle('is-active');
+      const hotelId = btn.dataset.hotelId;
+
+      // If we don't know the hotel id, fall back to purely visual toggle.
+      if (!hotelId) {
+        icon.classList.toggle('far');
+        icon.classList.toggle('fas');
+        btn.classList.toggle('is-active');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/favourites/${encodeURIComponent(hotelId)}/toggle`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'fetch',
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (res.status === 401) {
+          const data = await res.json().catch(() => null);
+          if (data && data.redirect) window.location.href = data.redirect;
+          return;
+        }
+
+        if (!res.ok) {
+          throw new Error(`Failed to toggle favourite (${res.status})`);
+        }
+
+        const data = await res.json();
+        const isFav = Boolean(data && data.isFavourite);
+        icon.classList.toggle('far', !isFav);
+        icon.classList.toggle('fas', isFav);
+        btn.classList.toggle('is-active', isFav);
+      } catch (e) {
+        // Network/server error: keep the UI responsive but don't desync too much.
+        icon.classList.toggle('far');
+        icon.classList.toggle('fas');
+        btn.classList.toggle('is-active');
+      }
     });
   });
 

@@ -34,7 +34,7 @@ block content
               span.hotel-detail__price-value $#{hotel.price.toFixed(0)}
               span.hotel-detail__price-unit / night
 
-            button.hotel-detail__fav(type="button" aria-label="Add to favourites" data-fav-toggle)
+            button.hotel-detail__fav(type="button" aria-label="Add to favourites" data-fav-toggle data-hotel-id=hotel.id)
               i.far.fa-heart
               //- span Save to favourites
 
