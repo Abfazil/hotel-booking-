@@ -5,7 +5,8 @@ HotelEase is a Node.js + Express + Pug hotel booking UI with:
 - MySQL database
 - phpMyAdmin for DB inspection
 - Docker Compose setup for app + DB + phpMyAdmin
-
+- Version 1.0.1
+ 
 ## Tech Stack
 
 - Node.js
@@ -17,36 +18,71 @@ HotelEase is a Node.js + Express + Pug hotel booking UI with:
 
 ## Project Structure
 
-```text
-hotelease/
-├── server.js
+```├── CODE_OF_CONDUCT.md
+├── controllers
+│   ├── authController.js
+│   ├── controllers
+│   │   └── DisputeController.js
+│   ├── dashboardController.js
+│   ├── favouriteController.js
+│   └── hotelController.js
 ├── db.js
-├── package.json
-├── Dockerfile
 ├── docker-compose.yml
-├── .env
-├── controllers/
-│   ├── hotelController.js
-│   └── authController.js
-├── models/
-│   └── hotelModel.js
-├── routes/
-│   ├── hotelRoutes.js
-│   └── authRoutes.js
-├── mysql-init/
-│   └── 002_sd2-db_dump.sql
-├── public/
-│   ├── css/style.css
-│   ├── js/main.js
-│   └── images/
-└── views/
-    ├── layout.pug
-    ├── index.pug
-    ├── hotels-list.pug
+├── Dockerfile
+├── LICENSE
+├── middleware
+│   ├── authMiddleware.js
+│   └── roleMiddleware.js
+├── models
+│   ├── favouriteModel.js
+│   ├── hotelModel.js
+│   ├── reviewModel.js
+│   └── userModel.js
+├── mysql-init
+│   ├── 002_sd2-db_dump.sql
+│   ├── 003_auth_tables.sql
+│   └── 004_seed_admin.sql
+├── package.json
+├── public
+│   ├── css
+│   │   └── style.css
+│   ├── images
+│   │   ├── gallery_01.jpg
+│   │   ├── gallery_02.jpg
+│   │   ├── homepage_image.webp
+│   │   └── why_choose_us.jpg
+│   └── js
+│       └── main.js
+├── README.md
+├── routes
+│   ├── authRoutes.js
+│   ├── dashboardRoutes.js
+│   ├── disputeRoutes.js
+│   ├── favouriteRoutes.js
+│   └── hotelRoutes.js
+├── server.js
+└── views
+    ├── auth
+    │   ├── login.pug
+    │   └── register.pug
+    ├── booking_dispute.pug
+    ├── dashboards
+    │   ├── admin-dashboard.pug
+    │   └── customer-dashboard.pug
+    ├── favourites.pug
     ├── hotel-detail.pug
+    ├── hotels-list.pug
+    ├── index.pug
+    ├── layout.pug
     ├── login.pug
+    ├── partials
+    │   ├── footer.pug
+    │   ├── mixins.pug
+    │   ├── nav.pug
+    │   └── reviews.pug
     ├── register.pug
-    └── partials/
+    ├── reviews.pug
+    └── thank-you.pug
 ```
 
 ## Environment Variables
@@ -81,7 +117,6 @@ docker compose up --build
 
 The SQL dump at `mysql-init/002_sd2-db_dump.sql` is auto-imported by MySQL on **first container initialization**.
 
-If you already had old MySQL data volume, reinitialize once:
 
 ```bash
 docker compose down -v
@@ -108,15 +143,32 @@ Or development mode:
 npm run dev
 ```
 
-> Note: If local MySQL is not reachable, the app uses fallback in-memory hotel data so UI pages still render.
 
 ## Available Routes
 
-- `GET /` - Home page
-- `GET /hotels` - Hotels listing
-- `GET /hotels/:id` - Hotel details
-- `GET /login` - Login page
-- `GET /register` - Registration page
+- **Hotels**
+  - `GET /` - Home page
+  - `GET /hotels` - Hotels listing
+  - `GET /hotels/:id` - Hotel details
+
+- **Auth**
+  - `GET /register` - Registration page
+  - `POST /register` - Create account
+  - `GET /login` - Login page
+  - `POST /login` - Login
+  - `GET /logout` - Logout
+
+- **Dashboards (requires auth + role)**
+  - `GET /dashboard` - Customer dashboard (role: `customer`)
+  - `GET /admin` - Admin dashboard (role: `admin`)
+
+- **Favourites (requires auth)**
+  - `GET /favourites` - List favourites
+  - `POST /favourites/:hotelId/toggle` - Toggle favourite 
+
+- **Booking disputes**
+  - `GET /disputes` - Dispute form/list
+  - `POST /disputes` - Create dispute
 
 ## Database Notes
 
@@ -130,7 +182,6 @@ npm run dev
 
 ### App starts but no DB data in phpMyAdmin
 
-Likely old Docker volume. Recreate containers with:
 
 ```bash
 docker compose down -v
