@@ -64,6 +64,28 @@ block content
           li Quiet, well‑insulated rooms for restful sleep
           li High‑speed Wi‑Fi and a dedicated work corner
 
+        if hotel.rooms && hotel.rooms.length
+          h2.hotel-detail__section-title Available room details
+          ul.dashboard__list
+            each room in hotel.rooms
+              li.dashboard__list-item
+                .dashboard__item-main
+                  strong= room.type
+                  span Capacity: #{room.capacity} guest(s)
+                span.dashboard__badge $#{room.pricePerNight.toFixed(0)} / night
+
+        if hotel.images && hotel.images.length
+          h2.hotel-detail__section-title Hotel pictures
+          ul.dashboard__list
+            each imageUrl in hotel.images
+              li.dashboard__list-item
+                .dashboard__item-main
+                  strong Picture
+                  span
+                    a(href=imageUrl target="_blank" rel="noreferrer") Open image
+                span.dashboard__badge
+                  a(href=imageUrl target="_blank" rel="noreferrer") View
+
         include reviews
 
       .hotel-detail__sidebar

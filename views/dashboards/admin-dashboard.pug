@@ -6,6 +6,8 @@ block content
       .dashboard__header
         h1.dashboard__title Admin Dashboard
         p.dashboard__subtitle Manage users, hotels, and disputes from one place.
+        if flash
+          p(class=`auth__message auth__message--${flash.type === 'success' ? 'success' : 'error'}`)= flash.message
 
       .dashboard__stats
         .dashboard__stat-card
@@ -17,6 +19,54 @@ block content
         .dashboard__stat-card
           p.dashboard__stat-label Total disputes
           p.dashboard__stat-value= stats.totalDisputes
+
+      .dashboard__grid
+        .dashboard__card
+          h2.dashboard__card-title Add a new hotel
+          p.dashboard__text Add hotel details, rooms, and image URLs. Changes appear instantly across the site.
+          form.dashboard__hotel-form(action="/admin/hotels" method="POST")
+            .dashboard__form-grid
+              .dashboard__field
+                label.dashboard__label(for="name") Hotel name
+                input.dashboard__input#name(type="text" name="name" required)
+              .dashboard__field
+                label.dashboard__label(for="city") City
+                input.dashboard__input#city(type="text" name="city" required)
+              .dashboard__field
+                label.dashboard__label(for="country") Country
+                input.dashboard__input#country(type="text" name="country" required)
+              .dashboard__field
+                label.dashboard__label(for="rating") Rating (1-5)
+                input.dashboard__input#rating(type="number" step="0.1" min="1" max="5" name="rating" required)
+            .dashboard__field
+              label.dashboard__label(for="address") Address
+              input.dashboard__input#address(type="text" name="address" required)
+            .dashboard__field
+              label.dashboard__label(for="rooms") Rooms (one line each: Room Type|Price|Capacity)
+              textarea.dashboard__textarea#rooms(name="rooms" rows="4" required placeholder="Single|120|1&#10;Double|180|2&#10;Suite|320|4")
+            .dashboard__field
+              label.dashboard__label(for="images") Pictures (one image URL per line)
+              textarea.dashboard__textarea#images(name="images" rows="3" placeholder="/images/gallery_01.jpg&#10;https://example.com/hotel/front.jpg")
+            .dashboard__actions
+              button.btn--primary(type="submit") Add hotel
+
+        .dashboard__card
+          h2.dashboard__card-title Manage hotels
+          if managedHotels && managedHotels.length
+            ul.dashboard__list
+              each hotel in managedHotels
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong #{hotel.name} (#{hotel.city}, #{hotel.country})
+                    span #{hotel.address}
+                    span #{hotel.roomsCount} room(s) • Rating #{Number.isFinite(hotel.rating) ? hotel.rating.toFixed(1) : 'N/A'}
+                    if hotel.image
+                      span
+                        a(href=hotel.image target="_blank" rel="noreferrer") View picture
+                  form(action=`/admin/hotels/${hotel.id}/delete` method="POST" onsubmit="return confirm('Delete this hotel? This action cannot be undone.')")
+                    button.btn--outline(type="submit") Remove
+          else
+            p.dashboard__empty No hotels found.
 
       .dashboard__grid
         .dashboard__card

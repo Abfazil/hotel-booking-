@@ -1,10 +1,78 @@
 class DashboardController {
-  constructor({ db, userModel }) {
+  constructor({ db, userModel, hotelModel }) {
     this.db = db;
     this.userModel = userModel;
+    this.hotelModel = hotelModel;
 
     this.customerDashboard = this.customerDashboard.bind(this);
     this.adminDashboard = this.adminDashboard.bind(this);
+    this.createHotel = this.createHotel.bind(this);
+    this.deleteHotel = this.deleteHotel.bind(this);
+  }
+
+  setFlash(req, type, message) {
+    req.session.flash = { type, message };
+  }
+
+  parseRoomsInput(roomsRaw) {
+    const lines = String(roomsRaw || '')
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    const rooms = lines.map((line) => {
+      const [roomTypeRaw, priceRaw, capacityRaw] = line.split('|').map((part) => part.trim());
+      const roomType = String(roomTypeRaw || '');
+      const pricePerNight = Number(priceRaw);
+      const capacity = Number(capacityRaw);
+
+      return {
+        roomType,
+        pricePerNight,
+        capacity,
+        available: 1,
+      };
+    });
+
+    const hasInvalidRoom = rooms.some(
+      (room) =>
+        !room.roomType ||
+        !Number.isFinite(room.pricePerNight) ||
+        room.pricePerNight <= 0 ||
+        !Number.isInteger(room.capacity) ||
+        room.capacity <= 0
+    );
+
+    if (!rooms.length || hasInvalidRoom) {
+      return { isValid: false, rooms: [] };
+    }
+
+    return { isValid: true, rooms };
+  }
+
+  parseImagesInput(imagesRaw) {
+    const images = String(imagesRaw || '')
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    const hasInvalidImage = images.some((url) => {
+      if (!/^https?:\/\//i.test(url) && !url.startsWith('/')) {
+        return true;
+      }
+
+      try {
+        // Allow relative image paths under /public and absolute URLs.
+        if (url.startsWith('/')) return false;
+        // eslint-disable-next-line no-new
+        new URL(url);
+        return false;
+      } catch (err) {
+        return true;
+      }
+    });
+
+    return { isValid: !hasInvalidImage, images };
   }
 
   async customerDashboard(req, res, next) {
@@ -132,6 +200,8 @@ class DashboardController {
         );
       }
 
+      const managedHotels = await this.hotelModel.getHotelsForAdmin();
+
       res.render('dashboards/admin-dashboard', {
         title: 'Admin Dashboard — HotelEase',
         stats: {
@@ -156,7 +226,94 @@ class DashboardController {
         recentUsers,
         recentBookings,
         recentDisputes,
+        managedHotels,
       });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async createHotel(req, res, next) {
+    try {
+      const name = String(req.body.name || '').trim();
+      const city = String(req.body.city || '').trim();
+      const country = String(req.body.country || '').trim();
+      const address = String(req.body.address || '').trim();
+      const rating = Number(req.body.rating);
+
+      if (!name || !city || !country || !address) {
+        this.setFlash(req, 'error', 'Please fill in all required hotel fields.');
+        res.redirect('/admin');
+        return;
+      }
+
+      if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
+        this.setFlash(req, 'error', 'Rating must be a number between 1 and 5.');
+        res.redirect('/admin');
+        return;
+      }
+
+      const parsedRooms = this.parseRoomsInput(req.body.rooms);
+      if (!parsedRooms.isValid) {
+        this.setFlash(
+          req,
+          'error',
+          'Rooms format is invalid. Use one room per line: Room Type|Price|Capacity.'
+        );
+        res.redirect('/admin');
+        return;
+      }
+
+      const parsedImages = this.parseImagesInput(req.body.images);
+      if (!parsedImages.isValid) {
+        this.setFlash(req, 'error', 'Each image URL must be a valid absolute URL or start with /.');
+        res.redirect('/admin');
+        return;
+      }
+
+      await this.hotelModel.createHotel({
+        name,
+        city,
+        country,
+        address,
+        rating,
+        rooms: parsedRooms.rooms,
+        images: parsedImages.images,
+      });
+
+      this.setFlash(req, 'success', `Hotel "${name}" added successfully.`);
+      res.redirect('/admin');
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async deleteHotel(req, res, next) {
+    try {
+      const hotelId = Number(req.params.id);
+      if (!Number.isFinite(hotelId)) {
+        this.setFlash(req, 'error', 'Invalid hotel id.');
+        res.redirect('/admin');
+        return;
+      }
+
+      const result = await this.hotelModel.deleteHotelById(hotelId);
+      if (!result.deleted) {
+        if (result.reason === 'has-dependencies') {
+          this.setFlash(
+            req,
+            'error',
+            `Cannot delete this hotel because it has ${result.bookingsCount} booking(s) and ${result.reviewsCount} review(s).`
+          );
+        } else {
+          this.setFlash(req, 'error', 'Hotel could not be deleted.');
+        }
+        res.redirect('/admin');
+        return;
+      }
+
+      this.setFlash(req, 'success', 'Hotel removed successfully.');
+      res.redirect('/admin');
     } catch (err) {
       next(err);
     }

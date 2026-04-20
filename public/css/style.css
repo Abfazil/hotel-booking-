@@ -1360,6 +1360,52 @@ img { max-width: 100%; display: block; }
   color: var(--color-muted);
 }
 
+.dashboard__hotel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.dashboard__form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.dashboard__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.dashboard__label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-navy);
+}
+
+.dashboard__input,
+.dashboard__textarea {
+  width: 100%;
+  border: 1px solid #d7e3f1;
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.84rem;
+  color: var(--color-navy);
+  background: #fbfdff;
+}
+
+.dashboard__textarea {
+  resize: vertical;
+}
+
+.dashboard__input:focus,
+.dashboard__textarea:focus {
+  outline: none;
+  border-color: #7aa8ff;
+  box-shadow: 0 0 0 3px rgba(122, 168, 255, 0.2);
+}
+
 /* Booking Disputes Page */
 .disputes {
   padding: 4.5rem 4rem 5rem;
@@ -1972,6 +2018,10 @@ img { max-width: 100%; display: block; }
   }
 
   .dashboard__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard__form-grid {
     grid-template-columns: 1fr;
   }
 }

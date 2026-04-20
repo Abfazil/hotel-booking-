@@ -7,6 +7,8 @@ module.exports = function dashboardRoutes(dashboardController) {
 
   router.get('/dashboard', requireAuth, requireRole('customer'), dashboardController.customerDashboard);
   router.get('/admin', requireAuth, requireRole('admin'), dashboardController.adminDashboard);
+  router.post('/admin/hotels', requireAuth, requireRole('admin'), dashboardController.createHotel);
+  router.post('/admin/hotels/:id/delete', requireAuth, requireRole('admin'), dashboardController.deleteHotel);
 
   return router;
 };
