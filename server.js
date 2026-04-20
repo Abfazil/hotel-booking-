@@ -63,7 +63,7 @@ const userModel = new UserModel({ db: pool });
 const hotelController = new HotelController({ hotelModel, reviewModel, db: pool });
 const authController = new AuthController({ userModel });
 const dashboardController = new DashboardController({ db: pool, userModel });
-const disputeController = new DisputeController();
+const disputeController = new DisputeController({ db: pool });
 const favouriteModel = new FavouriteModel({ db: pool, hotelModel });
 const favouriteController = new FavouriteController({ favouriteModel });
 
