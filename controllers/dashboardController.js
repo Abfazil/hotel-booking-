@@ -135,6 +135,7 @@ class DashboardController {
         `
       );
       const recentUsers = await this.userModel.listRecentUsers(5);
+      const customers = await this.userModel.listCustomersForAdmin(30);
       const recentBookings = await this.db.query(
         `
         SELECT
@@ -224,6 +225,7 @@ class DashboardController {
         filteredBookings,
         filteredDisputes,
         recentUsers,
+        customers,
         recentBookings,
         recentDisputes,
         managedHotels,

@@ -1260,6 +1260,32 @@ img { max-width: 100%; display: block; }
   margin-bottom: 0.7rem;
 }
 
+.dashboard__card-title--with-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.dashboard__card-toggle {
+  border: 1px solid #c8d7eb;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  color: var(--color-navy);
+  background: #f5f9ff;
+  transition: all var(--transition);
+}
+
+.dashboard__card-toggle:hover {
+  background: var(--color-navy);
+  color: var(--color-white);
+}
+
+.dashboard__card[data-collapsed='true'] .dashboard__card-title {
+  margin-bottom: 0;
+}
+
 .dashboard__list {
   display: flex;
   flex-direction: column;

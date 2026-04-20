@@ -155,6 +155,57 @@ class UserModel {
 
     return this.db.query(sql);
   }
+
+  async listCustomersForAdmin(limit = 20) {
+    const parsedLimit = Number(limit);
+    const safeLimit = Number.isFinite(parsedLimit) ? Math.max(1, Math.min(parsedLimit, 100)) : 20;
+    const schema = await this.resolveSchema();
+
+    const sql = schema.isLegacy
+      ? `
+        SELECT
+          u.user_id AS id,
+          CONCAT(u.first_name, ' ', u.last_name) AS name,
+          u.email AS email,
+          u.phone AS phone,
+          ${schema.hasRole ? 'u.role' : "'customer'"} AS role,
+          u.created_at AS createdAt,
+          COUNT(b.booking_id) AS bookingsCount
+        FROM users u
+        LEFT JOIN bookings b ON b.user_id = u.user_id
+        ${schema.hasRole ? "WHERE u.role = 'customer'" : ''}
+        GROUP BY u.user_id, u.first_name, u.last_name, u.email, u.phone, u.created_at${schema.hasRole ? ', u.role' : ''}
+        ORDER BY u.user_id DESC
+        LIMIT ${safeLimit}
+      `
+      : `
+        SELECT
+          u.id AS id,
+          u.name AS name,
+          u.email AS email,
+          NULL AS phone,
+          u.role AS role,
+          u.created_at AS createdAt,
+          COUNT(b.id) AS bookingsCount
+        FROM users u
+        LEFT JOIN bookings b ON b.user_id = u.id
+        WHERE u.role = 'customer'
+        GROUP BY u.id, u.name, u.email, u.role, u.created_at
+        ORDER BY u.id DESC
+        LIMIT ${safeLimit}
+      `;
+
+    const rows = await this.db.query(sql);
+    return rows.map((row) => ({
+      id: Number(row.id),
+      name: row.name,
+      email: row.email,
+      phone: row.phone || 'N/A',
+      role: row.role || 'customer',
+      createdAt: row.createdAt,
+      bookingsCount: Number(row.bookingsCount || 0),
+    }));
+  }
 }
 
 module.exports = UserModel;

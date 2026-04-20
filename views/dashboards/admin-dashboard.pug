@@ -8,163 +8,252 @@ block content
         p.dashboard__subtitle Manage users, hotels, and disputes from one place.
         if flash
           p(class=`auth__message auth__message--${flash.type === 'success' ? 'success' : 'error'}`)= flash.message
+        .dashboard__actions
+          button.btn--outline(type="button" data-expand-all) Expand all
+          button.btn--outline(type="button" data-collapse-all) Collapse all
 
-      .dashboard__stats
-        .dashboard__stat-card
-          p.dashboard__stat-label Total users
-          p.dashboard__stat-value= stats.totalUsers
-        .dashboard__stat-card
-          p.dashboard__stat-label Total bookings
-          p.dashboard__stat-value= stats.totalBookings
-        .dashboard__stat-card
-          p.dashboard__stat-label Total disputes
-          p.dashboard__stat-value= stats.totalDisputes
+      .dashboard__card(data-collapsible-card)
+        h2.dashboard__card-title Platform totals
+        .dashboard__card-body
+          .dashboard__stats
+            .dashboard__stat-card
+              p.dashboard__stat-label Total users
+              p.dashboard__stat-value= stats.totalUsers
+            .dashboard__stat-card
+              p.dashboard__stat-label Total bookings
+              p.dashboard__stat-value= stats.totalBookings
+            .dashboard__stat-card
+              p.dashboard__stat-label Total disputes
+              p.dashboard__stat-value= stats.totalDisputes
 
       .dashboard__grid
-        .dashboard__card
+        .dashboard__card(data-collapsible-card)
           h2.dashboard__card-title Add a new hotel
-          p.dashboard__text Add hotel details, rooms, and image URLs. Changes appear instantly across the site.
-          form.dashboard__hotel-form(action="/admin/hotels" method="POST")
-            .dashboard__form-grid
+          .dashboard__card-body
+            p.dashboard__text Add hotel details, rooms, and image URLs. Changes appear instantly across the site.
+            form.dashboard__hotel-form(action="/admin/hotels" method="POST")
+              .dashboard__form-grid
+                .dashboard__field
+                  label.dashboard__label(for="name") Hotel name
+                  input.dashboard__input#name(type="text" name="name" required)
+                .dashboard__field
+                  label.dashboard__label(for="city") City
+                  input.dashboard__input#city(type="text" name="city" required)
+                .dashboard__field
+                  label.dashboard__label(for="country") Country
+                  input.dashboard__input#country(type="text" name="country" required)
+                .dashboard__field
+                  label.dashboard__label(for="rating") Rating (1-5)
+                  input.dashboard__input#rating(type="number" step="0.1" min="1" max="5" name="rating" required)
               .dashboard__field
-                label.dashboard__label(for="name") Hotel name
-                input.dashboard__input#name(type="text" name="name" required)
+                label.dashboard__label(for="address") Address
+                input.dashboard__input#address(type="text" name="address" required)
               .dashboard__field
-                label.dashboard__label(for="city") City
-                input.dashboard__input#city(type="text" name="city" required)
+                label.dashboard__label(for="rooms") Rooms (one line each: Room Type|Price|Capacity)
+                textarea.dashboard__textarea#rooms(name="rooms" rows="4" required placeholder="Single|120|1&#10;Double|180|2&#10;Suite|320|4")
               .dashboard__field
-                label.dashboard__label(for="country") Country
-                input.dashboard__input#country(type="text" name="country" required)
-              .dashboard__field
-                label.dashboard__label(for="rating") Rating (1-5)
-                input.dashboard__input#rating(type="number" step="0.1" min="1" max="5" name="rating" required)
-            .dashboard__field
-              label.dashboard__label(for="address") Address
-              input.dashboard__input#address(type="text" name="address" required)
-            .dashboard__field
-              label.dashboard__label(for="rooms") Rooms (one line each: Room Type|Price|Capacity)
-              textarea.dashboard__textarea#rooms(name="rooms" rows="4" required placeholder="Single|120|1&#10;Double|180|2&#10;Suite|320|4")
-            .dashboard__field
-              label.dashboard__label(for="images") Pictures (one image URL per line)
-              textarea.dashboard__textarea#images(name="images" rows="3" placeholder="/images/gallery_01.jpg&#10;https://example.com/hotel/front.jpg")
-            .dashboard__actions
-              button.btn--primary(type="submit") Add hotel
+                label.dashboard__label(for="images") Pictures (one image URL per line)
+                textarea.dashboard__textarea#images(name="images" rows="3" placeholder="/images/gallery_01.jpg&#10;https://example.com/hotel/front.jpg")
+              .dashboard__actions
+                button.btn--primary(type="submit") Add hotel
 
-        .dashboard__card
+        .dashboard__card(data-collapsible-card)
           h2.dashboard__card-title Manage hotels
-          if managedHotels && managedHotels.length
-            ul.dashboard__list
-              each hotel in managedHotels
-                li.dashboard__list-item
-                  .dashboard__item-main
-                    strong #{hotel.name} (#{hotel.city}, #{hotel.country})
-                    span #{hotel.address}
-                    span #{hotel.roomsCount} room(s) • Rating #{Number.isFinite(hotel.rating) ? hotel.rating.toFixed(1) : 'N/A'}
-                    if hotel.image
-                      span
-                        a(href=hotel.image target="_blank" rel="noreferrer") View picture
-                  form(action=`/admin/hotels/${hotel.id}/delete` method="POST" onsubmit="return confirm('Delete this hotel? This action cannot be undone.')")
-                    button.btn--outline(type="submit") Remove
-          else
-            p.dashboard__empty No hotels found.
+          .dashboard__card-body
+            if managedHotels && managedHotels.length
+              ul.dashboard__list
+                each hotel in managedHotels
+                  li.dashboard__list-item
+                    .dashboard__item-main
+                      strong #{hotel.name} (#{hotel.city}, #{hotel.country})
+                      span #{hotel.address}
+                      span #{hotel.roomsCount} room(s) • Rating #{Number.isFinite(hotel.rating) ? hotel.rating.toFixed(1) : 'N/A'}
+                      if hotel.image
+                        span
+                          a(href=hotel.image target="_blank" rel="noreferrer") View picture
+                    form(action=`/admin/hotels/${hotel.id}/delete` method="POST" onsubmit="return confirm('Delete this hotel? This action cannot be undone.')")
+                      button.btn--outline(type="submit") Remove
+            else
+              p.dashboard__empty No hotels found.
 
       .dashboard__grid
-        .dashboard__card
+        .dashboard__card(data-collapsible-card)
           h2.dashboard__card-title Booking status breakdown
-          if bookingStatusSummary && bookingStatusSummary.length
-            ul.dashboard__list
-              each item in bookingStatusSummary
-                li.dashboard__list-item
-                  .dashboard__item-main
-                    strong
-                      a(href=`/admin?bookingStatus=${item.encodedStatus}`)= item.status
-                  span.dashboard__badge
-                    a(href=`/admin?bookingStatus=${item.encodedStatus}`)= item.total
-          else
-            p.dashboard__empty No booking status data found.
+          .dashboard__card-body
+            if bookingStatusSummary && bookingStatusSummary.length
+              ul.dashboard__list
+                each item in bookingStatusSummary
+                  li.dashboard__list-item
+                    .dashboard__item-main
+                      strong
+                        a(href=`/admin?bookingStatus=${item.encodedStatus}`)= item.status
+                    span.dashboard__badge
+                      a(href=`/admin?bookingStatus=${item.encodedStatus}`)= item.total
+            else
+              p.dashboard__empty No booking status data found.
 
-        .dashboard__card
+        .dashboard__card(data-collapsible-card)
           h2.dashboard__card-title Dispute status breakdown
-          if disputeStatusSummary && disputeStatusSummary.length
-            ul.dashboard__list
-              each item in disputeStatusSummary
-                li.dashboard__list-item
-                  .dashboard__item-main
-                    strong
-                      a(href=`/admin?disputeStatus=${item.encodedStatus}`)= item.status
-                  span.dashboard__badge
-                    a(href=`/admin?disputeStatus=${item.encodedStatus}`)= item.total
-          else
-            p.dashboard__empty No dispute status data found.
+          .dashboard__card-body
+            if disputeStatusSummary && disputeStatusSummary.length
+              ul.dashboard__list
+                each item in disputeStatusSummary
+                  li.dashboard__list-item
+                    .dashboard__item-main
+                      strong
+                        a(href=`/admin?disputeStatus=${item.encodedStatus}`)= item.status
+                    span.dashboard__badge
+                      a(href=`/admin?disputeStatus=${item.encodedStatus}`)= item.total
+            else
+              p.dashboard__empty No dispute status data found.
 
       if selectedBookingStatus
-        .dashboard__card
+        .dashboard__card(data-collapsible-card)
           h2.dashboard__card-title Booking details: #{selectedBookingStatus}
-          p
-            a(href="/admin") Clear filter
-          if filteredBookings && filteredBookings.length
-            ul.dashboard__list
-              each booking in filteredBookings
-                li.dashboard__list-item
-                  .dashboard__item-main
-                    strong Booking ##{booking.id} - #{booking.hotelName || 'Hotel'}
-                    span #{booking.checkIn} to #{booking.checkOut}
-                  span.dashboard__badge= booking.status
-          else
-            p.dashboard__empty No bookings found for this status.
+          .dashboard__card-body
+            p
+              a(href="/admin") Clear filter
+            if filteredBookings && filteredBookings.length
+              ul.dashboard__list
+                each booking in filteredBookings
+                  li.dashboard__list-item
+                    .dashboard__item-main
+                      strong Booking ##{booking.id} - #{booking.hotelName || 'Hotel'}
+                      span #{booking.checkIn} to #{booking.checkOut}
+                    span.dashboard__badge= booking.status
+            else
+              p.dashboard__empty No bookings found for this status.
 
       if selectedDisputeStatus
-        .dashboard__card
+        .dashboard__card(data-collapsible-card)
           h2.dashboard__card-title Dispute details: #{selectedDisputeStatus}
-          p
-            a(href="/admin") Clear filter
-          if filteredDisputes && filteredDisputes.length
-            ul.dashboard__list
-              each dispute in filteredDisputes
-                li.dashboard__list-item
-                  .dashboard__item-main
-                    strong Dispute ##{dispute.id} (Booking ##{dispute.bookingId})
-                    span #{dispute.issue}
-                  span.dashboard__badge= dispute.status
-          else
-            p.dashboard__empty No disputes found for this status.
+          .dashboard__card-body
+            p
+              a(href="/admin") Clear filter
+            if filteredDisputes && filteredDisputes.length
+              ul.dashboard__list
+                each dispute in filteredDisputes
+                  li.dashboard__list-item
+                    .dashboard__item-main
+                      strong Dispute ##{dispute.id} (Booking ##{dispute.bookingId})
+                      span #{dispute.issue}
+                    span.dashboard__badge= dispute.status
+            else
+              p.dashboard__empty No disputes found for this status.
 
       .dashboard__grid
-        .dashboard__card
+        .dashboard__card(data-collapsible-card)
           h2.dashboard__card-title Recent users
-          if recentUsers && recentUsers.length
-            ul.dashboard__list
-              each user in recentUsers
-                li.dashboard__list-item
-                  .dashboard__item-main
-                    strong #{user.name}
-                    span #{user.email}
-                  span.dashboard__badge= user.role
-          else
-            p.dashboard__empty No users found.
+          .dashboard__card-body
+            if recentUsers && recentUsers.length
+              ul.dashboard__list
+                each user in recentUsers
+                  li.dashboard__list-item
+                    .dashboard__item-main
+                      strong #{user.name}
+                      span #{user.email}
+                    span.dashboard__badge= user.role
+            else
+              p.dashboard__empty No users found.
 
-        .dashboard__card
+        .dashboard__card(data-collapsible-card)
           h2.dashboard__card-title Recent bookings
-          if recentBookings && recentBookings.length
+          .dashboard__card-body
+            if recentBookings && recentBookings.length
+              ul.dashboard__list
+                each booking in recentBookings
+                  li.dashboard__list-item
+                    .dashboard__item-main
+                      strong Booking ##{booking.id} - #{booking.hotelName || 'Hotel'}
+                      span #{booking.createdAt}
+                    span.dashboard__badge= booking.status || 'Pending'
+            else
+              p.dashboard__empty No bookings found.
+
+      .dashboard__card(data-collapsible-card)
+        h2.dashboard__card-title Recent disputes
+        .dashboard__card-body
+          if recentDisputes && recentDisputes.length
             ul.dashboard__list
-              each booking in recentBookings
+              each dispute in recentDisputes
                 li.dashboard__list-item
                   .dashboard__item-main
-                    strong Booking ##{booking.id} - #{booking.hotelName || 'Hotel'}
-                    span #{booking.createdAt}
-                  span.dashboard__badge= booking.status || 'Pending'
+                    strong Dispute ##{dispute.id}
+                    span #{dispute.issue}
+                  span.dashboard__badge= dispute.status || 'Open'
           else
-            p.dashboard__empty No bookings found.
+            p.dashboard__empty No disputes found.
 
-      .dashboard__card
-        h2.dashboard__card-title Recent disputes
-        if recentDisputes && recentDisputes.length
-          ul.dashboard__list
-            each dispute in recentDisputes
-              li.dashboard__list-item
-                .dashboard__item-main
-                  strong Dispute ##{dispute.id}
-                  span #{dispute.issue}
-                span.dashboard__badge= dispute.status || 'Open'
-        else
-          p.dashboard__empty No disputes found.
+      .dashboard__card(data-collapsible-card)
+        h2.dashboard__card-title Customer details (from database)
+        .dashboard__card-body
+          if customers && customers.length
+            ul.dashboard__list
+              each customer in customers
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong #{customer.name} (##{customer.id})
+                    span Email: #{customer.email}
+                    span Phone: #{customer.phone}
+                    span Joined: #{customer.createdAt}
+                  span.dashboard__badge #{customer.bookingsCount} booking(s)
+          else
+            p.dashboard__empty No customer records found.
+
+  script.
+    (function () {
+      const cards = Array.from(document.querySelectorAll('[data-collapsible-card]'));
+      const expandButton = document.querySelector('[data-expand-all]');
+      const collapseButton = document.querySelector('[data-collapse-all]');
+
+      function updateCardToggleButton(card, expanded) {
+        const toggle = card.querySelector('[data-card-toggle]');
+        if (!toggle) return;
+        toggle.textContent = expanded ? 'Collapse' : 'Expand';
+        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      }
+
+      function setCardExpanded(card, expanded) {
+        const body = card.querySelector('.dashboard__card-body');
+        if (!body) return;
+        body.style.display = expanded ? '' : 'none';
+        card.setAttribute('data-collapsed', expanded ? 'false' : 'true');
+        updateCardToggleButton(card, expanded);
+      }
+
+      function setExpanded(expanded) {
+        cards.forEach(function (card) {
+          setCardExpanded(card, expanded);
+        });
+      }
+
+      cards.forEach(function (card) {
+        const title = card.querySelector('.dashboard__card-title');
+        const body = card.querySelector('.dashboard__card-body');
+        if (!title || !body) return;
+
+        title.classList.add('dashboard__card-title--with-toggle');
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'dashboard__card-toggle';
+        toggle.setAttribute('data-card-toggle', 'true');
+        toggle.addEventListener('click', function () {
+          const isCollapsed = card.getAttribute('data-collapsed') === 'true';
+          setCardExpanded(card, isCollapsed);
+        });
+        title.appendChild(toggle);
+        setCardExpanded(card, true);
+      });
+
+      if (expandButton) {
+        expandButton.addEventListener('click', function () {
+          setExpanded(true);
+        });
+      }
+
+      if (collapseButton) {
+        collapseButton.addEventListener('click', function () {
+          setExpanded(false);
+        });
+      }
+    })();
