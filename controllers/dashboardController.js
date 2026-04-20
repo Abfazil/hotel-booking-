@@ -40,6 +40,9 @@ class DashboardController {
 
   async adminDashboard(req, res, next) {
     try {
+      const selectedBookingStatus = String(req.query.bookingStatus || '').trim();
+      const selectedDisputeStatus = String(req.query.disputeStatus || '').trim();
+
       const totalUsers = await this.userModel.countUsers();
       const bookingRows = await this.db.query('SELECT COUNT(*) AS total FROM bookings');
       const disputeRows = await this.db.query('SELECT COUNT(*) AS total FROM disputes');
@@ -90,6 +93,44 @@ class DashboardController {
         LIMIT 5
         `
       );
+      let filteredBookings = [];
+      let filteredDisputes = [];
+
+      if (selectedBookingStatus) {
+        filteredBookings = await this.db.query(
+          `
+          SELECT
+            b.booking_id AS id,
+            h.hotel_name AS hotelName,
+            COALESCE(NULLIF(b.booking_status, ''), 'Unknown') AS status,
+            b.check_in AS checkIn,
+            b.check_out AS checkOut
+          FROM bookings b
+          LEFT JOIN rooms r ON r.room_id = b.room_id
+          LEFT JOIN hotels h ON h.hotel_id = r.hotel_id
+          WHERE COALESCE(NULLIF(b.booking_status, ''), 'Unknown') = ?
+          ORDER BY b.booking_id DESC
+          `,
+          [selectedBookingStatus]
+        );
+      }
+
+      if (selectedDisputeStatus) {
+        filteredDisputes = await this.db.query(
+          `
+          SELECT
+            d.dispute_id AS id,
+            d.booking_id AS bookingId,
+            COALESCE(NULLIF(d.dispute_status, ''), 'Unknown') AS status,
+            d.issue AS issue,
+            d.created_at AS createdAt
+          FROM disputes d
+          WHERE COALESCE(NULLIF(d.dispute_status, ''), 'Unknown') = ?
+          ORDER BY d.dispute_id DESC
+          `,
+          [selectedDisputeStatus]
+        );
+      }
 
       res.render('dashboards/admin-dashboard', {
         title: 'Admin Dashboard — HotelEase',
@@ -101,11 +142,17 @@ class DashboardController {
         bookingStatusSummary: bookingStatusRows.map((row) => ({
           status: row.status,
           total: Number(row.total || 0),
+          encodedStatus: encodeURIComponent(row.status),
         })),
         disputeStatusSummary: disputeStatusRows.map((row) => ({
           status: row.status,
           total: Number(row.total || 0),
+          encodedStatus: encodeURIComponent(row.status),
         })),
+        selectedBookingStatus,
+        selectedDisputeStatus,
+        filteredBookings,
+        filteredDisputes,
         recentUsers,
         recentBookings,
         recentDisputes,

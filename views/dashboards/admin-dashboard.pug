@@ -26,8 +26,10 @@ block content
               each item in bookingStatusSummary
                 li.dashboard__list-item
                   .dashboard__item-main
-                    strong= item.status
-                  span.dashboard__badge= item.total
+                    strong
+                      a(href=`/admin?bookingStatus=${item.encodedStatus}`)= item.status
+                  span.dashboard__badge
+                    a(href=`/admin?bookingStatus=${item.encodedStatus}`)= item.total
           else
             p.dashboard__empty No booking status data found.
 
@@ -38,10 +40,44 @@ block content
               each item in disputeStatusSummary
                 li.dashboard__list-item
                   .dashboard__item-main
-                    strong= item.status
-                  span.dashboard__badge= item.total
+                    strong
+                      a(href=`/admin?disputeStatus=${item.encodedStatus}`)= item.status
+                  span.dashboard__badge
+                    a(href=`/admin?disputeStatus=${item.encodedStatus}`)= item.total
           else
             p.dashboard__empty No dispute status data found.
+
+      if selectedBookingStatus
+        .dashboard__card
+          h2.dashboard__card-title Booking details: #{selectedBookingStatus}
+          p
+            a(href="/admin") Clear filter
+          if filteredBookings && filteredBookings.length
+            ul.dashboard__list
+              each booking in filteredBookings
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong Booking ##{booking.id} - #{booking.hotelName || 'Hotel'}
+                    span #{booking.checkIn} to #{booking.checkOut}
+                  span.dashboard__badge= booking.status
+          else
+            p.dashboard__empty No bookings found for this status.
+
+      if selectedDisputeStatus
+        .dashboard__card
+          h2.dashboard__card-title Dispute details: #{selectedDisputeStatus}
+          p
+            a(href="/admin") Clear filter
+          if filteredDisputes && filteredDisputes.length
+            ul.dashboard__list
+              each dispute in filteredDisputes
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong Dispute ##{dispute.id} (Booking ##{dispute.bookingId})
+                    span #{dispute.issue}
+                  span.dashboard__badge= dispute.status
+          else
+            p.dashboard__empty No disputes found for this status.
 
       .dashboard__grid
         .dashboard__card
