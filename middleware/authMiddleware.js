@@ -22,6 +22,11 @@ function redirectIfAuthenticated(req, res, next) {
     return;
   }
 
+  if (req.session.user.role === 'hotel_owner') {
+    res.redirect('/owner/dashboard');
+    return;
+  }
+
   res.redirect('/dashboard');
 }
 

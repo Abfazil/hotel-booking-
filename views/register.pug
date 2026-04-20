@@ -10,7 +10,17 @@ block content
       h1.auth__title Create your account
       p.auth__subtitle Join HotelEase and save your favourite stays for later.
 
-      form.auth__form(action="#" method="post")
+      form.auth__form(action="/register" method="post")
+        .auth__field
+          label.auth__label Register as
+          .dashboard__actions
+            label
+              input(type="radio" name="accountType" value="customer" checked)
+              |  Customer
+            label
+              input(type="radio" name="accountType" value="hotel_owner")
+              |  Hotel owner
+
         .auth__field
           label.auth__label(for="name") Full name
           input.auth__input#name(type="text" name="name" placeholder="Alex Doe" required)
@@ -23,7 +33,44 @@ block content
           label.auth__label(for="password") Password
           input.auth__input#password(type="password" name="password" placeholder="Create a password" required)
 
+        .auth__owner-fields(data-owner-fields style="display:none;")
+          .auth__field
+            label.auth__label(for="hotelName") Hotel name
+            input.auth__input#hotelName(type="text" name="hotelName" placeholder="Grand Palace Hotel")
+          .auth__field
+            label.auth__label(for="hotelCity") Hotel city
+            input.auth__input#hotelCity(type="text" name="hotelCity" placeholder="London")
+          .auth__field
+            label.auth__label(for="hotelCountry") Hotel country
+            input.auth__input#hotelCountry(type="text" name="hotelCountry" placeholder="UK")
+          .auth__field
+            label.auth__label(for="hotelAddress") Hotel address
+            input.auth__input#hotelAddress(type="text" name="hotelAddress" placeholder="221 Baker Street")
+
         .auth__footer
           button.btn--primary(type="submit") Sign Up
           a.auth__link(href="/login") Already have an account? Log in
+
+  script.
+    (function () {
+      const ownerFields = document.querySelector('[data-owner-fields]');
+      const accountTypeInputs = Array.from(document.querySelectorAll('input[name="accountType"]'));
+      if (!ownerFields || !accountTypeInputs.length) return;
+
+      const ownerFieldInputs = Array.from(ownerFields.querySelectorAll('input'));
+      function setOwnerMode(enabled) {
+        ownerFields.style.display = enabled ? '' : 'none';
+        ownerFieldInputs.forEach((input) => {
+          input.required = enabled;
+        });
+      }
+
+      accountTypeInputs.forEach((input) => {
+        input.addEventListener('change', function () {
+          setOwnerMode(input.value === 'hotel_owner' && input.checked);
+        });
+      });
+
+      setOwnerMode(false);
+    })();
 

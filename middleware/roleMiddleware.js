@@ -14,7 +14,12 @@ function requireRole(role) {
         type: 'error',
         message: 'You do not have permission to access this page.',
       };
-      const fallback = req.session.user.role === 'admin' ? '/admin' : '/dashboard';
+      const fallback =
+        req.session.user.role === 'admin'
+          ? '/admin'
+          : req.session.user.role === 'hotel_owner'
+            ? '/owner/dashboard'
+            : '/dashboard';
       res.redirect(fallback);
       return;
     }

@@ -11,6 +11,8 @@ nav.navbar
     li: a.navbar__link(href="/disputes") Disputes
     if currentUser && currentUser.role === 'admin'
       li: a.navbar__link(href="/admin") Admin
+    else if currentUser && currentUser.role === 'hotel_owner'
+      li: a.navbar__link(href="/owner/dashboard") Hotel Admin
     else if currentUser
       li: a.navbar__link(href="/dashboard") Dashboard
       li: a.navbar__link(href="/favourites") Favourites

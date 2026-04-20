@@ -1,0 +1,89 @@
+extends ../layout
+
+block content
+  section.dashboard
+    .dashboard__inner
+      .dashboard__header
+        h1.dashboard__title Hotel Owner Dashboard
+        p.dashboard__subtitle Manage your hotels, rooms, and gallery images.
+        if flash
+          p(class=`auth__message auth__message--${flash.type === 'success' ? 'success' : 'error'}`)= flash.message
+
+      .dashboard__card
+        h2.dashboard__card-title My hotels
+        .dashboard__card-body
+          if ownerHotels && ownerHotels.length
+            ul.dashboard__list
+              each hotel in ownerHotels
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong #{hotel.name}
+                    span #{hotel.city}, #{hotel.country}
+                    span #{hotel.roomsCount} room(s) • #{hotel.imagesCount} image(s)
+                  a.btn--outline(href=`/owner/dashboard?hotelId=${hotel.id}`) Manage
+          else
+            p.dashboard__empty No hotels assigned yet. Ask admin to approve your owner request.
+
+      if selectedHotel
+        .dashboard__grid
+          .dashboard__card
+            h2.dashboard__card-title Add room - #{selectedHotel.name}
+            .dashboard__card-body
+              form(action="/owner/hotels/rooms" method="POST")
+                input(type="hidden" name="hotelId" value=selectedHotel.id)
+                .dashboard__field
+                  label.dashboard__label(for="roomType") Room type
+                  input.dashboard__input#roomType(type="text" name="roomType" placeholder="Deluxe Suite" required)
+                .dashboard__field
+                  label.dashboard__label(for="pricePerNight") Price per night
+                  input.dashboard__input#pricePerNight(type="number" min="1" step="0.01" name="pricePerNight" required)
+                .dashboard__field
+                  label.dashboard__label(for="capacity") Capacity
+                  input.dashboard__input#capacity(type="number" min="1" step="1" name="capacity" required)
+                .dashboard__field
+                  label.dashboard__label(for="available") Availability
+                  select.dashboard__input#available(name="available")
+                    option(value="1" selected) Available
+                    option(value="0") Unavailable
+                .dashboard__actions
+                  button.btn--primary(type="submit") Add room
+
+          .dashboard__card
+            h2.dashboard__card-title Add image - #{selectedHotel.name}
+            .dashboard__card-body
+              form(action="/owner/hotels/images" method="POST")
+                input(type="hidden" name="hotelId" value=selectedHotel.id)
+                .dashboard__field
+                  label.dashboard__label(for="imageUrl") Image URL
+                  input.dashboard__input#imageUrl(type="text" name="imageUrl" placeholder="/images/gallery_01.jpg or https://example.com/hotel.jpg" required)
+                .dashboard__actions
+                  button.btn--primary(type="submit") Add image
+
+        .dashboard__grid
+          .dashboard__card
+            h2.dashboard__card-title Rooms
+            .dashboard__card-body
+              if selectedHotel.rooms && selectedHotel.rooms.length
+                ul.dashboard__list
+                  each room in selectedHotel.rooms
+                    li.dashboard__list-item
+                      .dashboard__item-main
+                        strong #{room.roomType}
+                        span Capacity: #{room.capacity}
+                        span Price: $#{room.pricePerNight}
+                      span.dashboard__badge= room.available ? 'Available' : 'Unavailable'
+              else
+                p.dashboard__empty No rooms added yet.
+
+          .dashboard__card
+            h2.dashboard__card-title Hotel images
+            .dashboard__card-body
+              if selectedHotel.images && selectedHotel.images.length
+                ul.dashboard__list
+                  each image in selectedHotel.images
+                    li.dashboard__list-item
+                      .dashboard__item-main
+                        a(href=image.imageUrl target="_blank" rel="noreferrer")= image.imageUrl
+                      span.dashboard__badge Order #{image.sortOrder}
+              else
+                p.dashboard__empty No images added yet.

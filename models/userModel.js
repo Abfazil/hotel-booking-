@@ -15,12 +15,61 @@ class UserModel {
       columnNames.has('first_name') &&
       columnNames.has('password_hash');
 
+    if (!columnNames.has('role')) {
+      await this.db.query(
+        "ALTER TABLE users ADD COLUMN role VARCHAR(30) NOT NULL DEFAULT 'customer'"
+      );
+      columnNames.add('role');
+    } else {
+      await this.db.query(
+        "ALTER TABLE users MODIFY COLUMN role VARCHAR(30) NOT NULL DEFAULT 'customer'"
+      );
+    }
+
     this.schema = {
       isLegacy,
-      hasRole: columnNames.has('role'),
+      hasRole: true,
     };
 
+    await this.ensureHotelOwnerTables();
+
     return this.schema;
+  }
+
+  async ensureHotelOwnerTables() {
+    await this.db.query(
+      `
+      CREATE TABLE IF NOT EXISTS hotel_owner_requests (
+        request_id INT NOT NULL AUTO_INCREMENT,
+        user_id INT NOT NULL,
+        hotel_name VARCHAR(150) NOT NULL,
+        city VARCHAR(100) NOT NULL,
+        country VARCHAR(100) NOT NULL,
+        address VARCHAR(255) NOT NULL,
+        rating DECIMAL(2,1) NOT NULL DEFAULT 4.0,
+        status VARCHAR(20) NOT NULL DEFAULT 'pending',
+        reviewed_by INT NULL,
+        review_notes VARCHAR(255) NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        reviewed_at TIMESTAMP NULL DEFAULT NULL,
+        PRIMARY KEY (request_id),
+        UNIQUE KEY uniq_owner_request_user (user_id)
+      )
+      `
+    );
+
+    await this.db.query(
+      `
+      CREATE TABLE IF NOT EXISTS hotel_owners (
+        id INT NOT NULL AUTO_INCREMENT,
+        user_id INT NOT NULL,
+        hotel_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY uniq_owner_hotel (user_id, hotel_id)
+      )
+      `
+    );
   }
 
   splitName(name) {
@@ -205,6 +254,153 @@ class UserModel {
       createdAt: row.createdAt,
       bookingsCount: Number(row.bookingsCount || 0),
     }));
+  }
+
+  async createHotelOwnerRequest({ userId, hotelName, city, country, address, rating }) {
+    await this.resolveSchema();
+    await this.db.query(
+      `
+      INSERT INTO hotel_owner_requests
+        (user_id, hotel_name, city, country, address, rating, status)
+      VALUES (?, ?, ?, ?, ?, ?, 'pending')
+      ON DUPLICATE KEY UPDATE
+        hotel_name = VALUES(hotel_name),
+        city = VALUES(city),
+        country = VALUES(country),
+        address = VALUES(address),
+        rating = VALUES(rating),
+        status = 'pending',
+        reviewed_by = NULL,
+        review_notes = NULL,
+        reviewed_at = NULL
+      `,
+      [userId, hotelName, city, country, address, rating]
+    );
+  }
+
+  async getHotelOwnerRequestByEmail(email) {
+    const schema = await this.resolveSchema();
+    const userIdColumn = schema.isLegacy ? 'u.user_id' : 'u.id';
+
+    const rows = await this.db.query(
+      `
+      SELECT
+        r.request_id AS requestId,
+        r.user_id AS userId,
+        r.status AS status,
+        r.hotel_name AS hotelName,
+        r.city AS city,
+        r.country AS country,
+        r.address AS address,
+        r.rating AS rating,
+        r.review_notes AS reviewNotes
+      FROM hotel_owner_requests r
+      INNER JOIN users u ON ${userIdColumn} = r.user_id
+      WHERE u.email = ?
+      LIMIT 1
+      `,
+      [email]
+    );
+
+    return rows[0] || null;
+  }
+
+  async listPendingHotelOwnerRequests(limit = 20) {
+    const schema = await this.resolveSchema();
+    const userIdCol = schema.isLegacy ? 'u.user_id' : 'u.id';
+    const fullNameCol = schema.isLegacy ? "CONCAT(u.first_name, ' ', u.last_name)" : 'u.name';
+
+    const rows = await this.db.query(
+      `
+      SELECT
+        r.request_id AS requestId,
+        r.user_id AS userId,
+        ${fullNameCol} AS userName,
+        u.email AS email,
+        r.hotel_name AS hotelName,
+        r.city AS city,
+        r.country AS country,
+        r.address AS address,
+        r.rating AS rating,
+        r.status AS status,
+        r.created_at AS createdAt
+      FROM hotel_owner_requests r
+      INNER JOIN users u ON ${userIdCol} = r.user_id
+      WHERE r.status = 'pending'
+      ORDER BY r.request_id ASC
+      LIMIT ${Math.max(1, Math.min(Number(limit) || 20, 100))}
+      `
+    );
+
+    return rows.map((row) => ({
+      requestId: Number(row.requestId),
+      userId: Number(row.userId),
+      userName: row.userName,
+      email: row.email,
+      hotelName: row.hotelName,
+      city: row.city,
+      country: row.country,
+      address: row.address,
+      rating: Number(row.rating),
+      status: row.status,
+      createdAt: row.createdAt,
+    }));
+  }
+
+  async getHotelOwnerRequestById(requestId) {
+    await this.resolveSchema();
+    const rows = await this.db.query(
+      `
+      SELECT
+        request_id AS requestId,
+        user_id AS userId,
+        hotel_name AS hotelName,
+        city,
+        country,
+        address,
+        rating,
+        status
+      FROM hotel_owner_requests
+      WHERE request_id = ?
+      LIMIT 1
+      `,
+      [requestId]
+    );
+    return rows[0] || null;
+  }
+
+  async setUserRole(userId, role) {
+    const schema = await this.resolveSchema();
+    const userIdCol = schema.isLegacy ? 'user_id' : 'id';
+    await this.db.query(`UPDATE users SET role = ? WHERE ${userIdCol} = ?`, [role, userId]);
+  }
+
+  async updateHotelOwnerRequestStatus({ requestId, status, reviewedBy = null, reviewNotes = null }) {
+    await this.resolveSchema();
+    await this.db.query(
+      `
+      UPDATE hotel_owner_requests
+      SET
+        status = ?,
+        reviewed_by = ?,
+        review_notes = ?,
+        reviewed_at = NOW()
+      WHERE request_id = ?
+      `,
+      [status, reviewedBy, reviewNotes, requestId]
+    );
+  }
+
+  async attachOwnerToHotel({ userId, hotelId }) {
+    await this.resolveSchema();
+    await this.db.query(
+      `
+      INSERT INTO hotel_owners (user_id, hotel_id)
+      VALUES (?, ?)
+      ON DUPLICATE KEY UPDATE user_id = VALUES(user_id)
+      `,
+      [userId, hotelId]
+    );
   }
 }
 

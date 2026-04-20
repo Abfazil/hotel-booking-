@@ -11,6 +11,26 @@ block content
 
       form.auth__form(action="/register" method="post")
         .auth__field
+          label.auth__label Register as
+          .dashboard__actions
+            label
+              input(
+                type="radio"
+                name="accountType"
+                value="customer"
+                checked=!formData || !formData.accountType || formData.accountType === 'customer'
+              )
+              |  Customer
+            label
+              input(
+                type="radio"
+                name="accountType"
+                value="hotel_owner"
+                checked=formData && formData.accountType === 'hotel_owner'
+              )
+              |  Hotel owner
+
+        .auth__field
           label.auth__label(for="name") Full name
           input.auth__input#name(
             type="text"
@@ -39,6 +59,81 @@ block content
             required
           )
 
+        .auth__owner-fields(
+          data-owner-fields
+          style=formData && formData.accountType === 'hotel_owner' ? '' : 'display:none;'
+        )
+          .auth__field
+            label.auth__label(for="hotelName") Hotel name
+            input.auth__input#hotelName(
+              type="text"
+              name="hotelName"
+              placeholder="Grand Palace Hotel"
+              value=formData && formData.hotelName ? formData.hotelName : ''
+            )
+          .auth__field
+            label.auth__label(for="hotelCity") Hotel city
+            input.auth__input#hotelCity(
+              type="text"
+              name="hotelCity"
+              placeholder="London"
+              value=formData && formData.hotelCity ? formData.hotelCity : ''
+            )
+          .auth__field
+            label.auth__label(for="hotelCountry") Hotel country
+            input.auth__input#hotelCountry(
+              type="text"
+              name="hotelCountry"
+              placeholder="UK"
+              value=formData && formData.hotelCountry ? formData.hotelCountry : ''
+            )
+          .auth__field
+            label.auth__label(for="hotelAddress") Hotel address
+            input.auth__input#hotelAddress(
+              type="text"
+              name="hotelAddress"
+              placeholder="221 Baker Street"
+              value=formData && formData.hotelAddress ? formData.hotelAddress : ''
+            )
+          .auth__field
+            label.auth__label(for="hotelRating") Expected rating (1-5)
+            input.auth__input#hotelRating(
+              type="number"
+              step="0.1"
+              min="1"
+              max="5"
+              name="hotelRating"
+              value=formData && formData.hotelRating ? formData.hotelRating : '4'
+            )
+
         .auth__footer
           button.btn--primary(type="submit") Sign Up
           a.auth__link(href="/login") Already have an account? Log in
+
+  script.
+    (function () {
+      const ownerFields = document.querySelector('[data-owner-fields]');
+      const accountTypeInputs = Array.from(document.querySelectorAll('input[name="accountType"]'));
+      if (!ownerFields || !accountTypeInputs.length) return;
+
+      const ownerFieldInputs = Array.from(ownerFields.querySelectorAll('input'));
+      function setOwnerMode(enabled) {
+        ownerFields.style.display = enabled ? '' : 'none';
+        ownerFieldInputs.forEach((input) => {
+          input.required = enabled;
+        });
+      }
+
+      function selectedType() {
+        const selected = accountTypeInputs.find((input) => input.checked);
+        return selected ? selected.value : 'customer';
+      }
+
+      accountTypeInputs.forEach((input) => {
+        input.addEventListener('change', function () {
+          setOwnerMode(selectedType() === 'hotel_owner');
+        });
+      });
+
+      setOwnerMode(selectedType() === 'hotel_owner');
+    })();

@@ -234,6 +234,209 @@ class HotelModel {
     return hotelId;
   }
 
+  async createHotelForOwner({
+    name,
+    city,
+    country,
+    address,
+    rating,
+    ownerUserId,
+    rooms = [],
+    images = [],
+  }) {
+    if (!this.pool) {
+      throw new Error('Database not connected');
+    }
+
+    await this.init();
+
+    const hotelId = await this.createHotel({
+      name,
+      city,
+      country,
+      address,
+      rating,
+      rooms: rooms.length ? rooms : [{ roomType: 'Standard', pricePerNight: 120, capacity: 2, available: 1 }],
+      images,
+    });
+
+    await this.pool.query(
+      `
+      INSERT INTO hotel_owners (user_id, hotel_id)
+      VALUES (?, ?)
+      ON DUPLICATE KEY UPDATE user_id = VALUES(user_id)
+      `,
+      [ownerUserId, hotelId]
+    );
+
+    return hotelId;
+  }
+
+  async getHotelsForOwner(ownerUserId) {
+    if (!this.pool) {
+      throw new Error('Database not connected');
+    }
+
+    await this.init();
+
+    const rows = await this.pool.query(
+      `
+      SELECT
+        h.hotel_id AS id,
+        h.hotel_name AS name,
+        h.city AS city,
+        h.country AS country,
+        h.address AS address,
+        h.rating AS rating,
+        COUNT(DISTINCT r.room_id) AS roomsCount,
+        COUNT(DISTINCT hi.image_id) AS imagesCount
+      FROM hotel_owners ho
+      INNER JOIN hotels h ON h.hotel_id = ho.hotel_id
+      LEFT JOIN rooms r ON r.hotel_id = h.hotel_id
+      LEFT JOIN hotel_images hi ON hi.hotel_id = h.hotel_id
+      WHERE ho.user_id = ?
+      GROUP BY h.hotel_id, h.hotel_name, h.city, h.country, h.address, h.rating
+      ORDER BY h.hotel_id DESC
+      `,
+      [ownerUserId]
+    );
+
+    return rows.map((row) => ({
+      id: Number(row.id),
+      name: row.name,
+      city: row.city,
+      country: row.country,
+      address: row.address,
+      rating: Number(row.rating),
+      roomsCount: Number(row.roomsCount || 0),
+      imagesCount: Number(row.imagesCount || 0),
+    }));
+  }
+
+  async ownerCanManageHotel(ownerUserId, hotelId) {
+    const rows = await this.pool.query(
+      `
+      SELECT 1 AS allowed
+      FROM hotel_owners
+      WHERE user_id = ? AND hotel_id = ?
+      LIMIT 1
+      `,
+      [ownerUserId, hotelId]
+    );
+    return Boolean(rows[0]);
+  }
+
+  async getOwnerHotelDetails(ownerUserId, hotelId) {
+    if (!this.pool) {
+      throw new Error('Database not connected');
+    }
+
+    await this.init();
+
+    const allowed = await this.ownerCanManageHotel(ownerUserId, hotelId);
+    if (!allowed) return null;
+
+    const [hotel] = await this.pool.query(
+      `
+      SELECT
+        hotel_id AS id,
+        hotel_name AS name,
+        city,
+        country,
+        address,
+        rating
+      FROM hotels
+      WHERE hotel_id = ?
+      LIMIT 1
+      `,
+      [hotelId]
+    );
+
+    if (!hotel) return null;
+
+    const rooms = await this.pool.query(
+      `
+      SELECT
+        room_id AS id,
+        room_type AS roomType,
+        price_per_night AS pricePerNight,
+        capacity,
+        available
+      FROM rooms
+      WHERE hotel_id = ?
+      ORDER BY room_id DESC
+      `,
+      [hotelId]
+    );
+
+    const images = await this.pool.query(
+      `
+      SELECT image_id AS id, image_url AS imageUrl, sort_order AS sortOrder
+      FROM hotel_images
+      WHERE hotel_id = ?
+      ORDER BY sort_order ASC, image_id ASC
+      `,
+      [hotelId]
+    );
+
+    return {
+      id: Number(hotel.id),
+      name: hotel.name,
+      city: hotel.city,
+      country: hotel.country,
+      address: hotel.address,
+      rating: Number(hotel.rating),
+      rooms: rooms.map((row) => ({
+        id: Number(row.id),
+        roomType: row.roomType,
+        pricePerNight: Number(row.pricePerNight),
+        capacity: Number(row.capacity),
+        available: Boolean(row.available),
+      })),
+      images: images.map((row) => ({
+        id: Number(row.id),
+        imageUrl: row.imageUrl,
+        sortOrder: Number(row.sortOrder || 0),
+      })),
+    };
+  }
+
+  async addRoomForOwner(ownerUserId, hotelId, { roomType, pricePerNight, capacity, available }) {
+    const allowed = await this.ownerCanManageHotel(ownerUserId, hotelId);
+    if (!allowed) return false;
+
+    await this.pool.query(
+      `
+      INSERT INTO rooms (hotel_id, room_type, price_per_night, capacity, available)
+      VALUES (?, ?, ?, ?, ?)
+      `,
+      [hotelId, roomType, pricePerNight, capacity, available ? 1 : 0]
+    );
+
+    return true;
+  }
+
+  async addImageForOwner(ownerUserId, hotelId, imageUrl) {
+    const allowed = await this.ownerCanManageHotel(ownerUserId, hotelId);
+    if (!allowed) return false;
+
+    const rows = await this.pool.query(
+      'SELECT COALESCE(MAX(sort_order), -1) + 1 AS nextSortOrder FROM hotel_images WHERE hotel_id = ?',
+      [hotelId]
+    );
+    const nextSortOrder = Number(rows[0]?.nextSortOrder || 0);
+
+    await this.pool.query(
+      `
+      INSERT INTO hotel_images (hotel_id, image_url, sort_order)
+      VALUES (?, ?, ?)
+      `,
+      [hotelId, imageUrl, nextSortOrder]
+    );
+
+    return true;
+  }
+
   async canDeleteHotel(hotelId) {
     const reviewRows = await this.pool.query(
       'SELECT COUNT(*) AS total FROM reviews WHERE hotel_id = ?',

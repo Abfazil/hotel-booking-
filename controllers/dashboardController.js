@@ -8,6 +8,11 @@ class DashboardController {
     this.adminDashboard = this.adminDashboard.bind(this);
     this.createHotel = this.createHotel.bind(this);
     this.deleteHotel = this.deleteHotel.bind(this);
+    this.approveHotelOwnerRequest = this.approveHotelOwnerRequest.bind(this);
+    this.rejectHotelOwnerRequest = this.rejectHotelOwnerRequest.bind(this);
+    this.hotelOwnerDashboard = this.hotelOwnerDashboard.bind(this);
+    this.addOwnerRoom = this.addOwnerRoom.bind(this);
+    this.addOwnerImage = this.addOwnerImage.bind(this);
   }
 
   setFlash(req, type, message) {
@@ -73,6 +78,12 @@ class DashboardController {
     });
 
     return { isValid: !hasInvalidImage, images };
+  }
+
+  parseHotelId(rawHotelId) {
+    const hotelId = Number(rawHotelId);
+    if (!Number.isFinite(hotelId) || hotelId <= 0) return null;
+    return hotelId;
   }
 
   async customerDashboard(req, res, next) {
@@ -202,6 +213,7 @@ class DashboardController {
       }
 
       const managedHotels = await this.hotelModel.getHotelsForAdmin();
+      const pendingOwnerRequests = await this.userModel.listPendingHotelOwnerRequests(50);
 
       res.render('dashboards/admin-dashboard', {
         title: 'Admin Dashboard — HotelEase',
@@ -229,6 +241,7 @@ class DashboardController {
         recentBookings,
         recentDisputes,
         managedHotels,
+        pendingOwnerRequests,
       });
     } catch (err) {
       next(err);
@@ -316,6 +329,176 @@ class DashboardController {
 
       this.setFlash(req, 'success', 'Hotel removed successfully.');
       res.redirect('/admin');
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async approveHotelOwnerRequest(req, res, next) {
+    try {
+      const requestId = Number(req.params.requestId);
+      if (!Number.isFinite(requestId) || requestId <= 0) {
+        this.setFlash(req, 'error', 'Invalid request id.');
+        res.redirect('/admin');
+        return;
+      }
+
+      const request = await this.userModel.getHotelOwnerRequestById(requestId);
+      if (!request || request.status !== 'pending') {
+        this.setFlash(req, 'error', 'Request not found or already reviewed.');
+        res.redirect('/admin');
+        return;
+      }
+
+      await this.userModel.setUserRole(request.userId, 'hotel_owner');
+      const hotelId = await this.hotelModel.createHotelForOwner({
+        name: request.hotelName,
+        city: request.city,
+        country: request.country,
+        address: request.address,
+        rating: Number(request.rating || 4),
+        ownerUserId: Number(request.userId),
+      });
+      await this.userModel.attachOwnerToHotel({ userId: Number(request.userId), hotelId });
+      await this.userModel.updateHotelOwnerRequestStatus({
+        requestId,
+        status: 'approved',
+        reviewedBy: req.session.user.id,
+        reviewNotes: 'Approved by admin',
+      });
+
+      this.setFlash(req, 'success', 'Hotel owner request approved.');
+      res.redirect('/admin');
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async rejectHotelOwnerRequest(req, res, next) {
+    try {
+      const requestId = Number(req.params.requestId);
+      const reviewNotes = String(req.body.reviewNotes || '').trim();
+      if (!Number.isFinite(requestId) || requestId <= 0) {
+        this.setFlash(req, 'error', 'Invalid request id.');
+        res.redirect('/admin');
+        return;
+      }
+
+      const request = await this.userModel.getHotelOwnerRequestById(requestId);
+      if (!request || request.status !== 'pending') {
+        this.setFlash(req, 'error', 'Request not found or already reviewed.');
+        res.redirect('/admin');
+        return;
+      }
+
+      await this.userModel.setUserRole(request.userId, 'customer');
+      await this.userModel.updateHotelOwnerRequestStatus({
+        requestId,
+        status: 'rejected',
+        reviewedBy: req.session.user.id,
+        reviewNotes: reviewNotes || 'Rejected by admin',
+      });
+
+      this.setFlash(req, 'success', 'Hotel owner request rejected.');
+      res.redirect('/admin');
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async hotelOwnerDashboard(req, res, next) {
+    try {
+      const ownerUserId = req.session.user.id;
+      const ownerHotels = await this.hotelModel.getHotelsForOwner(ownerUserId);
+      const selectedHotelId = this.parseHotelId(req.query.hotelId);
+      const selectedHotel =
+        selectedHotelId && ownerHotels.some((hotel) => hotel.id === selectedHotelId)
+          ? await this.hotelModel.getOwnerHotelDetails(ownerUserId, selectedHotelId)
+          : null;
+
+      res.render('dashboards/hotel-owner-dashboard', {
+        title: 'Hotel Owner Dashboard — HotelEase',
+        ownerHotels,
+        selectedHotelId,
+        selectedHotel,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async addOwnerRoom(req, res, next) {
+    try {
+      const ownerUserId = req.session.user.id;
+      const hotelId = this.parseHotelId(req.body.hotelId);
+      const roomType = String(req.body.roomType || '').trim();
+      const pricePerNight = Number(req.body.pricePerNight);
+      const capacity = Number(req.body.capacity);
+      const available = String(req.body.available || '1') === '1';
+
+      if (!hotelId || !roomType) {
+        this.setFlash(req, 'error', 'Hotel and room type are required.');
+        res.redirect('/owner/dashboard');
+        return;
+      }
+      if (!Number.isFinite(pricePerNight) || pricePerNight <= 0) {
+        this.setFlash(req, 'error', 'Price per night must be greater than 0.');
+        res.redirect(`/owner/dashboard?hotelId=${hotelId}`);
+        return;
+      }
+      if (!Number.isInteger(capacity) || capacity <= 0) {
+        this.setFlash(req, 'error', 'Capacity must be a positive whole number.');
+        res.redirect(`/owner/dashboard?hotelId=${hotelId}`);
+        return;
+      }
+
+      const added = await this.hotelModel.addRoomForOwner(ownerUserId, hotelId, {
+        roomType,
+        pricePerNight,
+        capacity,
+        available,
+      });
+      if (!added) {
+        this.setFlash(req, 'error', 'You are not allowed to manage this hotel.');
+        res.redirect('/owner/dashboard');
+        return;
+      }
+
+      this.setFlash(req, 'success', 'Room added successfully.');
+      res.redirect(`/owner/dashboard?hotelId=${hotelId}`);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async addOwnerImage(req, res, next) {
+    try {
+      const ownerUserId = req.session.user.id;
+      const hotelId = this.parseHotelId(req.body.hotelId);
+      const imageUrl = String(req.body.imageUrl || '').trim();
+
+      if (!hotelId || !imageUrl) {
+        this.setFlash(req, 'error', 'Hotel and image URL are required.');
+        res.redirect('/owner/dashboard');
+        return;
+      }
+
+      const imagesResult = this.parseImagesInput(imageUrl);
+      if (!imagesResult.isValid) {
+        this.setFlash(req, 'error', 'Image URL must be absolute or start with /.');
+        res.redirect(`/owner/dashboard?hotelId=${hotelId}`);
+        return;
+      }
+
+      const added = await this.hotelModel.addImageForOwner(ownerUserId, hotelId, imageUrl);
+      if (!added) {
+        this.setFlash(req, 'error', 'You are not allowed to manage this hotel.');
+        res.redirect('/owner/dashboard');
+        return;
+      }
+
+      this.setFlash(req, 'success', 'Image added successfully.');
+      res.redirect(`/owner/dashboard?hotelId=${hotelId}`);
     } catch (err) {
       next(err);
     }

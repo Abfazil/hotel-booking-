@@ -78,6 +78,29 @@ block content
 
       .dashboard__grid
         .dashboard__card(data-collapsible-card)
+          h2.dashboard__card-title Hotel owner approval requests
+          .dashboard__card-body
+            if pendingOwnerRequests && pendingOwnerRequests.length
+              ul.dashboard__list
+                each request in pendingOwnerRequests
+                  li.dashboard__list-item
+                    .dashboard__item-main
+                      strong #{request.userName} (#{request.email})
+                      span Hotel: #{request.hotelName}
+                      span #{request.city}, #{request.country} - #{request.address}
+                      span Requested rating: #{Number.isFinite(request.rating) ? request.rating.toFixed(1) : 'N/A'}
+                      span Requested at: #{request.createdAt}
+                    .dashboard__actions
+                      form(action=`/admin/owner-requests/${request.requestId}/approve` method="POST")
+                        button.btn--primary(type="submit") Approve
+                      form(action=`/admin/owner-requests/${request.requestId}/reject` method="POST")
+                        input.dashboard__input(type="text" name="reviewNotes" placeholder="Reason (optional)")
+                        button.btn--outline(type="submit") Reject
+            else
+              p.dashboard__empty No pending owner approval requests.
+
+      .dashboard__grid
+        .dashboard__card(data-collapsible-card)
           h2.dashboard__card-title Booking status breakdown
           .dashboard__card-body
             if bookingStatusSummary && bookingStatusSummary.length
