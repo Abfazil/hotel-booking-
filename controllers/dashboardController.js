@@ -43,6 +43,26 @@ class DashboardController {
       const totalUsers = await this.userModel.countUsers();
       const bookingRows = await this.db.query('SELECT COUNT(*) AS total FROM bookings');
       const disputeRows = await this.db.query('SELECT COUNT(*) AS total FROM disputes');
+      const bookingStatusRows = await this.db.query(
+        `
+        SELECT
+          COALESCE(NULLIF(b.booking_status, ''), 'Unknown') AS status,
+          COUNT(*) AS total
+        FROM bookings b
+        GROUP BY COALESCE(NULLIF(b.booking_status, ''), 'Unknown')
+        ORDER BY total DESC
+        `
+      );
+      const disputeStatusRows = await this.db.query(
+        `
+        SELECT
+          COALESCE(NULLIF(d.dispute_status, ''), 'Unknown') AS status,
+          COUNT(*) AS total
+        FROM disputes d
+        GROUP BY COALESCE(NULLIF(d.dispute_status, ''), 'Unknown')
+        ORDER BY total DESC
+        `
+      );
       const recentUsers = await this.userModel.listRecentUsers(5);
       const recentBookings = await this.db.query(
         `
@@ -78,6 +98,14 @@ class DashboardController {
           totalBookings: Number(bookingRows[0]?.total || 0),
           totalDisputes: Number(disputeRows[0]?.total || 0),
         },
+        bookingStatusSummary: bookingStatusRows.map((row) => ({
+          status: row.status,
+          total: Number(row.total || 0),
+        })),
+        disputeStatusSummary: disputeStatusRows.map((row) => ({
+          status: row.status,
+          total: Number(row.total || 0),
+        })),
         recentUsers,
         recentBookings,
         recentDisputes,

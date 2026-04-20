@@ -18,18 +18,30 @@ block content
           p.dashboard__stat-label Total disputes
           p.dashboard__stat-value= stats.totalDisputes
 
-      .dashboard__card
-        h2.dashboard__card-title Manage platform
-        ul.dashboard__manage
-          li
-            strong View users
-            p Track customer profiles and account status.
-          li
-            strong Manage hotels
-            p Update listings and review hotel information.
-          li
-            strong View disputes
-            p Inspect open customer disputes and resolve issues.
+      .dashboard__grid
+        .dashboard__card
+          h2.dashboard__card-title Booking status breakdown
+          if bookingStatusSummary && bookingStatusSummary.length
+            ul.dashboard__list
+              each item in bookingStatusSummary
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong= item.status
+                  span.dashboard__badge= item.total
+          else
+            p.dashboard__empty No booking status data found.
+
+        .dashboard__card
+          h2.dashboard__card-title Dispute status breakdown
+          if disputeStatusSummary && disputeStatusSummary.length
+            ul.dashboard__list
+              each item in disputeStatusSummary
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong= item.status
+                  span.dashboard__badge= item.total
+          else
+            p.dashboard__empty No dispute status data found.
 
       .dashboard__grid
         .dashboard__card
