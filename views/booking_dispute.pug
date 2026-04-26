@@ -24,7 +24,7 @@ block content
           .disputes__card
             h2.disputes__card-title Report a new issue
 
-            form.disputes__form(action="/disputes" method="post")
+            form.disputes__form#disputeForm(action="/disputes" method="post" enctype="multipart/form-data")
 
               .disputes__field
                 label.disputes__label(for="bookingId") Booking ID
@@ -61,6 +61,8 @@ block content
                   name="evidence"
                   accept="image/*"
                 )
+                input(type="hidden" name="evidenceData" id="evidenceData")
+                input(type="hidden" name="evidenceName" id="evidenceName")
 
               .disputes__actions
                 button.btn--primary(type="submit") Submit dispute
@@ -99,3 +101,41 @@ block content
               li Keep your booking ID ready
               li Provide clear descriptions
               li Upload photos if possible
+
+  script.
+    (() => {
+      const disputeForm = document.getElementById("disputeForm");
+      const evidenceInput = document.getElementById("evidence");
+      const evidenceDataInput = document.getElementById("evidenceData");
+      const evidenceNameInput = document.getElementById("evidenceName");
+
+      if (!disputeForm || !evidenceInput || !evidenceDataInput || !evidenceNameInput) {
+        return;
+      }
+
+      disputeForm.addEventListener("submit", (event) => {
+        const file = evidenceInput.files && evidenceInput.files[0];
+        if (!file) {
+          evidenceDataInput.value = "";
+          evidenceNameInput.value = "";
+          return;
+        }
+
+        event.preventDefault();
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          evidenceDataInput.value = typeof reader.result === "string" ? reader.result : "";
+          evidenceNameInput.value = file.name || "evidence";
+          disputeForm.submit();
+        };
+
+        reader.onerror = () => {
+          evidenceDataInput.value = "";
+          evidenceNameInput.value = "";
+          disputeForm.submit();
+        };
+
+        reader.readAsDataURL(file);
+      });
+    })();
