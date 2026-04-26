@@ -309,6 +309,59 @@ img { max-width: 100%; display: block; }
   color: var(--color-text);
 }
 
+.search-bar__input {
+  font-family: inherit;
+  border: 1px solid #d8e0ea;
+  border-radius: 8px;
+  background: #f8fafc;
+  outline: none;
+  font-size: 13px;
+  color: var(--color-text);
+  padding: 0.42rem 0.55rem;
+  min-width: 138px;
+}
+
+.search-bar__input:focus {
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
+}
+
+.ui-datepicker {
+  border: 1px solid #d8e0ea !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14) !important;
+  padding: 0.45rem !important;
+  font-family: "DM Sans", sans-serif !important;
+}
+
+.ui-datepicker .ui-datepicker-header {
+  border: none !important;
+  background: #f3f4f6 !important;
+  border-radius: 8px !important;
+}
+
+.ui-datepicker td a,
+.ui-datepicker td span {
+  border-radius: 8px !important;
+  text-align: center !important;
+  border: none !important;
+}
+
+.ui-datepicker .ui-state-active,
+.ui-datepicker .ui-widget-content .ui-state-active {
+  background: #6c63ff !important;
+  color: #fff !important;
+}
+
+.search-bar__input {
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
 .search-bar__divider {
   width: 1px;
   height: 50px;

@@ -110,4 +110,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ── Home Datepicker + Timepicker Defaults ─────────────────────────────────
+  const jq = window.jQuery;
+  const checkInDateInput = jq ? jq('#homeCheckInDate') : null;
+  const checkOutDateInput = jq ? jq('#homeCheckOutDate') : null;
+  const checkInTimeInput = document.querySelector('#homeCheckInTime');
+  const checkOutTimeInput = document.querySelector('#homeCheckOutTime');
+
+  if (jq && checkInDateInput.length && checkOutDateInput.length && jq.fn.datepicker) {
+    const dateFormat = 'yy-mm-dd';
+    const today = new Date();
+
+    checkInDateInput.datepicker({
+      dateFormat,
+      minDate: 0,
+      onSelect(selectedDate) {
+        checkOutDateInput.datepicker('option', 'minDate', selectedDate);
+        const checkOutDate = checkOutDateInput.datepicker('getDate');
+        const checkInDate = checkInDateInput.datepicker('getDate');
+        if (!checkOutDate || (checkInDate && checkOutDate < checkInDate)) {
+          checkOutDateInput.datepicker('setDate', checkInDate);
+        }
+      },
+    });
+
+    checkOutDateInput.datepicker({
+      dateFormat,
+      minDate: 0,
+    });
+
+    checkInDateInput.datepicker('setDate', today);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    checkOutDateInput.datepicker('setDate', tomorrow);
+    checkOutDateInput.datepicker('option', 'minDate', checkInDateInput.val());
+  }
+
+  if (checkInTimeInput && !checkInTimeInput.value) checkInTimeInput.value = '14:00';
+  if (checkOutTimeInput && !checkOutTimeInput.value) checkOutTimeInput.value = '11:00';
+
 });
