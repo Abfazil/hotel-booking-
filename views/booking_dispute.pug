@@ -24,16 +24,15 @@ block content
           .disputes__card
             h2.disputes__card-title Report a new issue
 
-            form.disputes__form#disputeForm(action="/disputes" method="post" enctype="multipart/form-data")
+            form.disputes__form#disputeForm(action="/disputes" method="post")
 
               .disputes__field
                 label.disputes__label(for="bookingId") Booking ID
-                input.disputes__input#bookingId(
-                  type="text"
-                  name="bookingId"
-                  placeholder="e.g. HTL-123456"
-                  required
-                )
+                select.disputes__input#bookingId(name="bookingId" required)
+                  option(value="" disabled selected) Select your booking
+                  if customerBookings && customerBookings.length
+                    each booking in customerBookings
+                      option(value=`HTL-${booking.id}`)= `HTL-${booking.id} - ${booking.hotelName || 'Hotel'} (${booking.bookingStatus || 'Confirmed'})`
 
               .disputes__field
                 label.disputes__label(for="issueType") Issue type
@@ -79,7 +78,7 @@ block content
                     .disputes__item-top
                       span.disputes__booking #{dispute.bookingId}
                       span.disputes__status(class=`status--${dispute.status}`)
-                        | #{dispute.status}
+                        | #{dispute.statusLabel}
 
                     p.disputes__issue #{dispute.issueType}
                     p.disputes__desc #{dispute.description}

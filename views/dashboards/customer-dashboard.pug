@@ -44,3 +44,47 @@ block content
           .dashboard__actions
             a.btn--primary(href="/hotels") Browse hotels
             a.btn--outline(href="/disputes") View disputes
+
+      .dashboard__grid
+        .dashboard__card
+          h2.dashboard__card-title Request cancellation
+          p.dashboard__text Submit a cancellation request for one of your bookings.
+          form(action="/dashboard/cancellations" method="POST")
+            .dashboard__field
+              label.dashboard__label(for="cancelBookingId") Booking
+              select.dashboard__input#cancelBookingId(name="bookingId" required)
+                option(value="" disabled selected) Select booking
+                if bookings && bookings.length
+                  each booking in bookings
+                    option(value=booking.id)= `#${booking.id} - ${booking.hotelName || 'Hotel'} (${booking.status || 'Pending'})`
+            .dashboard__field
+              label.dashboard__label(for="cancelReason") Reason
+              textarea.dashboard__textarea#cancelReason(name="reason" rows="3" required placeholder="Reason for cancellation...")
+            .dashboard__actions
+              button.btn--primary(type="submit") Submit request
+
+        .dashboard__card
+          h2.dashboard__card-title My cancellation requests
+          if cancellationRequests && cancellationRequests.length
+            ul.dashboard__list
+              each request in cancellationRequests
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong Request ##{request.id} - Booking ##{request.bookingId} (#{request.hotelName || 'Hotel'})
+                    span Status: #{request.status}
+                    if request.adminNotes
+                      span Admin notes: #{request.adminNotes}
+                    if String(request.status || '').toLowerCase() === 'pending'
+                      form(action=`/dashboard/cancellations/${request.id}/update` method="POST")
+                        .dashboard__field
+                          label.dashboard__label Update reason
+                          textarea.dashboard__textarea(name="reason" rows="2" required)= request.reason
+                        .dashboard__actions
+                          button.btn--primary(type="submit") Update request
+                      form(action=`/dashboard/cancellations/${request.id}/delete` method="POST" onsubmit="return confirm('Delete this cancellation request?')")
+                        button.btn--outline(type="submit") Delete request
+                    else
+                      p.dashboard__text #{request.reason}
+                  span.dashboard__badge= request.status
+          else
+            p.dashboard__empty No cancellation requests yet.

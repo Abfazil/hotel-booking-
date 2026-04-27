@@ -34,22 +34,23 @@ block content
         )
 
   //- ── Search Bar ──────────────────────────────────────────────────────────
-  .search-bar
+  form.search-bar(action="/hotels" method="GET")
     .search-bar__group
       label.search-bar__label Check in
       .search-bar__fields
         .search-bar__field
           span.search-bar__field-label Locations
-          select(aria-label="Select your city")
-            option Select your city
-            option Paris
-            option London
-            option New York
+          select(aria-label="Select your city" name="city")
+            option(value="") All cities
+            if cities && cities.length
+              each city in cities
+                option(value=city)= city
         .search-bar__field
           span.search-bar__field-label Date
           input.search-bar__input#homeCheckInDate(
             type="text"
             aria-label="Check-in date"
+            name="checkInDate"
             autocomplete="off"
             placeholder="Select date"
           )
@@ -71,6 +72,7 @@ block content
           input.search-bar__input#homeCheckOutDate(
             type="text"
             aria-label="Check-out date"
+            name="checkOutDate"
             autocomplete="off"
             placeholder="Select date"
           )
@@ -82,7 +84,13 @@ block content
             step="900"
           )
 
-    button.btn--search(type="button") Search
+    .search-bar__group
+      label.search-bar__label Guests
+      .search-bar__fields
+        .search-bar__field
+          span.search-bar__field-label People
+          input.search-bar__input(type="number" name="guests" min="1" value="1")
+    button.btn--search(type="submit") Search
 
   //- ══════════════════════════════════════════════════════════════════════
   //- SECTION 2 — How It Works

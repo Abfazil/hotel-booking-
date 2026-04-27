@@ -14,9 +14,17 @@ class HotelController {
   async home(req, res, next) {
     try {
       const hotels = await this.hotelModel.getHotels();
+      const cities = Array.from(
+        new Set(
+          hotels
+            .map((hotel) => String(hotel.location || '').split(',')[0].trim())
+            .filter(Boolean)
+        )
+      ).sort((a, b) => a.localeCompare(b));
       res.render('index', {
         title: 'HotelEase — Find Your Perfect Stay',
         hotels,
+        cities,
       });
     } catch (err) {
       next(err);
@@ -25,10 +33,24 @@ class HotelController {
 
   async list(req, res, next) {
     try {
-      const hotels = await this.hotelModel.getHotels();
+      const filters = {
+        city: String(req.query.city || '').trim(),
+        checkInDate: String(req.query.checkInDate || '').trim(),
+        checkOutDate: String(req.query.checkOutDate || '').trim(),
+        guests: Number.parseInt(req.query.guests, 10),
+      };
+      const allHotels = await this.hotelModel.getHotels();
+      const hotels = allHotels.filter((hotel) => {
+        if (filters.city) {
+          const hotelCity = String(hotel.location || '').split(',')[0].trim().toLowerCase();
+          if (hotelCity !== filters.city.toLowerCase()) return false;
+        }
+        return true;
+      });
       res.render('hotels-list', {
         title: 'All Hotels — HotelEase',
         hotels,
+        filters,
       });
     } catch (err) {
       next(err);
@@ -123,7 +145,7 @@ class HotelController {
       const roomPrice = Number(selectedRoom.price_per_night || hotel.price || 0);
       const totalCost = roomPrice * safeNights;
 
-      await this.db.query(
+      const insertResult = await this.db.query(
         `
         INSERT INTO bookings (user_id, room_id, check_in, check_out, total_price, booking_status)
         VALUES (?, ?, ?, ?, ?, ?)
@@ -132,6 +154,7 @@ class HotelController {
       );
 
       const bookingSummary = {
+        bookingId: Number(insertResult.insertId || 0),
         hotelName: hotel.name,
         location: hotel.location,
         price: roomPrice,

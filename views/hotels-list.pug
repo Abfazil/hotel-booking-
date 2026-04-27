@@ -28,7 +28,10 @@ block content
       .listing__meta
         span.listing__meta-count #{hotels.length} stays found
         span.listing__meta-divider ·
-        span.listing__meta-note Popular this week
+        if filters && filters.city
+          span.listing__meta-note Filtered by city: #{filters.city}
+        else
+          span.listing__meta-note Popular this week
 
       .listing__grid
         each hotel in hotels

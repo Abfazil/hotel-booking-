@@ -67,11 +67,13 @@ class DisputeController {
   }
 
   mapDbDisputeToView(dispute) {
+    const normalizedStatus = String(dispute.status || "Pending").toLowerCase();
     return {
       bookingId: `HTL-${dispute.bookingId}`,
       issueType: dispute.issueType || "other",
       description: dispute.description || dispute.issue,
-      status: String(dispute.status || "Open").toLowerCase(),
+      status: normalizedStatus,
+      statusLabel: normalizedStatus === "resolved" ? "resolved" : "pending",
       date: this.formatDate(dispute.createdAt),
     };
   }
@@ -104,9 +106,26 @@ class DisputeController {
         });
       });
 
+      const customerBookings = await this.db.query(
+        `
+        SELECT
+          b.booking_id AS id,
+          h.hotel_name AS hotelName,
+          b.booking_status AS bookingStatus
+        FROM bookings b
+        LEFT JOIN rooms r ON r.room_id = b.room_id
+        LEFT JOIN hotels h ON h.hotel_id = r.hotel_id
+        WHERE b.user_id = ?
+        ORDER BY b.booking_id DESC
+        LIMIT 50
+        `,
+        [userId]
+      );
+
       res.render("booking_dispute", {
         title: "Booking Disputes - HotelEase",
         disputes,
+        customerBookings,
       });
     } catch (err) {
       next(err);
@@ -161,7 +180,7 @@ class DisputeController {
         INSERT INTO disputes (booking_id, user_id, issue, dispute_status)
         VALUES (?, ?, ?, ?)
         `,
-        [bookingId, userId, issue, "Open"]
+        [bookingId, userId, issue, "Pending"]
       );
 
       req.session.flash = {

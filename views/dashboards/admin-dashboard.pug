@@ -5,7 +5,7 @@ block content
     .dashboard__inner
       .dashboard__header
         h1.dashboard__title Admin Dashboard
-        p.dashboard__subtitle Manage users, hotels, and disputes from one place.
+        p.dashboard__subtitle Organized control center for hotels, bookings, disputes, cancellations, and customers.
         if flash
           p(class=`auth__message auth__message--${flash.type === 'success' ? 'success' : 'error'}`)= flash.message
         .dashboard__actions
@@ -15,6 +15,7 @@ block content
       .dashboard__card(data-collapsible-card)
         h2.dashboard__card-title Platform totals
         .dashboard__card-body
+          p.dashboard__text Standard overview of key platform metrics and system health.
           .dashboard__stats
             .dashboard__stat-card
               p.dashboard__stat-label Total users
@@ -25,6 +26,11 @@ block content
             .dashboard__stat-card
               p.dashboard__stat-label Total disputes
               p.dashboard__stat-value= stats.totalDisputes
+
+      .dashboard__card(data-collapsible-card)
+        h2.dashboard__card-title Hotel Management
+        .dashboard__card-body
+          p.dashboard__text Create, update, and remove hotels from one section.
 
       .dashboard__grid
         .dashboard__card(data-collapsible-card)
@@ -65,16 +71,39 @@ block content
                 each hotel in managedHotels
                   li.dashboard__list-item
                     .dashboard__item-main
-                      strong #{hotel.name} (#{hotel.city}, #{hotel.country})
-                      span #{hotel.address}
-                      span #{hotel.roomsCount} room(s) • Rating #{Number.isFinite(hotel.rating) ? hotel.rating.toFixed(1) : 'N/A'}
-                      if hotel.image
-                        span
-                          a(href=hotel.image target="_blank" rel="noreferrer") View picture
+                      form(action=`/admin/hotels/${hotel.id}/update` method="POST")
+                        .dashboard__field
+                          label.dashboard__label Hotel name
+                          input.dashboard__input(type="text" name="name" value=hotel.name required)
+                        .dashboard__field
+                          label.dashboard__label City
+                          input.dashboard__input(type="text" name="city" value=hotel.city required)
+                        .dashboard__field
+                          label.dashboard__label Country
+                          input.dashboard__input(type="text" name="country" value=hotel.country required)
+                        .dashboard__field
+                          label.dashboard__label Address
+                          input.dashboard__input(type="text" name="address" value=hotel.address required)
+                        .dashboard__field
+                          label.dashboard__label Rating
+                          input.dashboard__input(type="number" step="0.1" min="1" max="5" name="rating" value=hotel.rating required)
+                        span #{hotel.roomsCount} room(s)
+                        if hotel.image
+                          span
+                            a(href=hotel.image target="_blank" rel="noreferrer") View picture
+                        if rowFlash && rowFlash.section === 'hotel' && Number(rowFlash.id) === Number(hotel.id)
+                          p(class=`auth__message auth__message--${rowFlash.type === 'success' ? 'success' : 'error'}`)= rowFlash.message
+                        .dashboard__actions
+                          button.btn--primary(type="submit") Save hotel
                     form(action=`/admin/hotels/${hotel.id}/delete` method="POST" onsubmit="return confirm('Delete this hotel? This action cannot be undone.')")
                       button.btn--outline(type="submit") Remove
             else
               p.dashboard__empty No hotels found.
+
+      .dashboard__card(data-collapsible-card)
+        h2.dashboard__card-title Request Management
+        .dashboard__card-body
+          p.dashboard__text Review all owner and cancellation requests in one workflow.
 
       .dashboard__grid
         .dashboard__card(data-collapsible-card)
@@ -99,7 +128,25 @@ block content
             else
               p.dashboard__empty No pending owner approval requests.
 
+      .dashboard__card(data-collapsible-card)
+        h2.dashboard__card-title Booking And Dispute Monitoring
+        .dashboard__card-body
+          p.dashboard__text Track booking and dispute statuses, then open details by status.
+
       .dashboard__grid
+        .dashboard__card(data-collapsible-card)
+          h2.dashboard__card-title Cancellation status breakdown
+          .dashboard__card-body
+            if cancellationStatusSummary && cancellationStatusSummary.length
+              ul.dashboard__list
+                each item in cancellationStatusSummary
+                  li.dashboard__list-item
+                    .dashboard__item-main
+                      strong= item.status
+                    span.dashboard__badge= item.total
+            else
+              p.dashboard__empty No cancellation request data found.
+
         .dashboard__card(data-collapsible-card)
           h2.dashboard__card-title Booking status breakdown
           .dashboard__card-body
@@ -142,6 +189,7 @@ block content
                   li.dashboard__list-item
                     .dashboard__item-main
                       strong Booking ##{booking.id} - #{booking.hotelName || 'Hotel'}
+                      span Customer: #{booking.customerName || 'N/A'}
                       span #{booking.checkIn} to #{booking.checkOut}
                     span.dashboard__badge= booking.status
             else
@@ -188,8 +236,23 @@ block content
                   li.dashboard__list-item
                     .dashboard__item-main
                       strong Booking ##{booking.id} - #{booking.hotelName || 'Hotel'}
+                      span Customer: #{booking.customerName || 'N/A'}
                       span #{booking.createdAt}
-                    span.dashboard__badge= booking.status || 'Pending'
+                      form(action=`/admin/bookings/${booking.id}/update` method="POST")
+                        .dashboard__field
+                          label.dashboard__label Booking status
+                          select.dashboard__input(name="bookingStatus")
+                            option(value="Pending" selected=String(booking.status || '').toLowerCase() === 'pending') Pending
+                            option(value="Confirmed" selected=String(booking.status || '').toLowerCase() === 'confirmed') Confirmed
+                            option(value="Cancelled" selected=String(booking.status || '').toLowerCase() === 'cancelled') Cancelled
+                        .dashboard__actions
+                          button.btn--primary(type="submit") Save booking
+                      if rowFlash && rowFlash.section === 'booking' && Number(rowFlash.id) === Number(booking.id)
+                        p(class=`auth__message auth__message--${rowFlash.type === 'success' ? 'success' : 'error'}`)= rowFlash.message
+                    .dashboard__actions
+                      span.dashboard__badge= booking.status || 'Pending'
+                      form(action=`/admin/bookings/${booking.id}/delete` method="POST" onsubmit="return confirm('Delete this booking?')")
+                        button.btn--outline(type="submit") Delete
             else
               p.dashboard__empty No bookings found.
 
@@ -201,11 +264,51 @@ block content
               each dispute in recentDisputes
                 li.dashboard__list-item
                   .dashboard__item-main
-                    strong Dispute ##{dispute.id}
-                    span #{dispute.issue}
-                  span.dashboard__badge= dispute.status || 'Open'
+                    strong Dispute ##{dispute.id} (Booking ##{dispute.bookingId}, Customer ##{dispute.userId})
+                    form(action=`/admin/disputes/${dispute.id}/update` method="POST")
+                      .dashboard__field
+                        label.dashboard__label Issue
+                        input.dashboard__input(type="text" name="issue" value=dispute.issue required)
+                      .dashboard__field
+                        label.dashboard__label Status
+                        select.dashboard__input(name="disputeStatus")
+                          option(value="pending" selected=String(dispute.status || '').toLowerCase() !== 'resolved') Pending
+                          option(value="resolved" selected=String(dispute.status || '').toLowerCase() === 'resolved') Resolved
+                      .dashboard__actions
+                        button.btn--primary(type="submit") Save dispute
+                    if rowFlash && rowFlash.section === 'dispute' && Number(rowFlash.id) === Number(dispute.id)
+                      p(class=`auth__message auth__message--${rowFlash.type === 'success' ? 'success' : 'error'}`)= rowFlash.message
+                    form(action=`/admin/disputes/${dispute.id}/delete` method="POST" onsubmit="return confirm('Delete this dispute?')")
+                      button.btn--outline(type="submit") Delete dispute
           else
             p.dashboard__empty No disputes found.
+
+      .dashboard__card(data-collapsible-card)
+        h2.dashboard__card-title Cancellation requests
+        .dashboard__card-body
+          if recentCancellationRequests && recentCancellationRequests.length
+            ul.dashboard__list
+              each request in recentCancellationRequests
+                li.dashboard__list-item
+                  .dashboard__item-main
+                    strong Request ##{request.id} - Booking ##{request.bookingId} (Customer ##{request.userId})
+                    span Reason: #{request.reason}
+                    if request.adminNotes
+                      span Notes: #{request.adminNotes}
+                    span Submitted: #{request.createdAt}
+                  .dashboard__actions
+                    span.dashboard__badge= request.status
+                    if String(request.status || '').toLowerCase() === 'pending'
+                      form(action=`/admin/cancellations/${request.id}/review` method="POST")
+                        input.dashboard__input(type="text" name="adminNotes" placeholder="Notes (optional)")
+                        input(type="hidden" name="action" value="approve")
+                        button.btn--primary(type="submit") Approve
+                      form(action=`/admin/cancellations/${request.id}/review` method="POST")
+                        input.dashboard__input(type="text" name="adminNotes" placeholder="Reason for rejection")
+                        input(type="hidden" name="action" value="reject")
+                        button.btn--outline(type="submit") Reject
+          else
+            p.dashboard__empty No cancellation requests found.
 
       .dashboard__card(data-collapsible-card)
         h2.dashboard__card-title Customer details (from database)
@@ -215,11 +318,23 @@ block content
               each customer in customers
                 li.dashboard__list-item
                   .dashboard__item-main
-                    strong #{customer.name} (##{customer.id})
-                    span Email: #{customer.email}
+                    form(action=`/admin/customers/${customer.id}/update` method="POST")
+                      .dashboard__field
+                        label.dashboard__label Name
+                        input.dashboard__input(type="text" name="name" value=customer.name required)
+                      .dashboard__field
+                        label.dashboard__label Email
+                        input.dashboard__input(type="email" name="email" value=customer.email required)
+                      .dashboard__actions
+                        button.btn--primary(type="submit") Save customer
+                    if rowFlash && rowFlash.section === 'customer' && Number(rowFlash.id) === Number(customer.id)
+                      p(class=`auth__message auth__message--${rowFlash.type === 'success' ? 'success' : 'error'}`)= rowFlash.message
                     span Phone: #{customer.phone}
                     span Joined: #{customer.createdAt}
-                  span.dashboard__badge #{customer.bookingsCount} booking(s)
+                  .dashboard__actions
+                    span.dashboard__badge #{customer.bookingsCount} booking(s)
+                    form(action=`/admin/customers/${customer.id}/delete` method="POST" onsubmit="return confirm('Delete this customer?')")
+                      button.btn--outline(type="submit") Delete
           else
             p.dashboard__empty No customer records found.
 

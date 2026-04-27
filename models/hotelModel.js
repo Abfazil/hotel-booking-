@@ -416,6 +416,44 @@ class HotelModel {
     return true;
   }
 
+  async updateRoomForOwner(ownerUserId, hotelId, roomId, { roomType, pricePerNight, capacity, available }) {
+    const allowed = await this.ownerCanManageHotel(ownerUserId, hotelId);
+    if (!allowed) return false;
+
+    const result = await this.pool.query(
+      `
+      UPDATE rooms
+      SET room_type = ?, price_per_night = ?, capacity = ?, available = ?
+      WHERE room_id = ? AND hotel_id = ?
+      `,
+      [roomType, pricePerNight, capacity, available ? 1 : 0, roomId, hotelId]
+    );
+
+    return Number(result.affectedRows || 0) > 0;
+  }
+
+  async deleteRoomForOwner(ownerUserId, hotelId, roomId) {
+    const allowed = await this.ownerCanManageHotel(ownerUserId, hotelId);
+    if (!allowed) return false;
+
+    const bookingRows = await this.pool.query(
+      'SELECT COUNT(*) AS total FROM bookings WHERE room_id = ?',
+      [roomId]
+    );
+    if (Number(bookingRows[0]?.total || 0) > 0) {
+      return false;
+    }
+
+    const result = await this.pool.query(
+      `
+      DELETE FROM rooms
+      WHERE room_id = ? AND hotel_id = ?
+      `,
+      [roomId, hotelId]
+    );
+    return Number(result.affectedRows || 0) > 0;
+  }
+
   async addImageForOwner(ownerUserId, hotelId, imageUrl) {
     const allowed = await this.ownerCanManageHotel(ownerUserId, hotelId);
     if (!allowed) return false;
@@ -485,6 +523,22 @@ class HotelModel {
     const result = await this.pool.query('DELETE FROM hotels WHERE hotel_id = ?', [numericId]);
 
     return { deleted: Number(result.affectedRows || 0) > 0 };
+  }
+
+  async updateHotelById(id, { name, city, country, address, rating }) {
+    const numericId = Number(id);
+    if (!Number.isFinite(numericId)) return false;
+
+    await this.init();
+    const result = await this.pool.query(
+      `
+      UPDATE hotels
+      SET hotel_name = ?, city = ?, country = ?, address = ?, rating = ?
+      WHERE hotel_id = ?
+      `,
+      [name, city, country, address, rating, numericId]
+    );
+    return Number(result.affectedRows || 0) > 0;
   }
 }
 

@@ -68,10 +68,27 @@ block content
                   each room in selectedHotel.rooms
                     li.dashboard__list-item
                       .dashboard__item-main
-                        strong #{room.roomType}
-                        span Capacity: #{room.capacity}
-                        span Price: $#{room.pricePerNight}
-                      span.dashboard__badge= room.available ? 'Available' : 'Unavailable'
+                        form(action=`/owner/hotels/rooms/${room.id}/update` method="POST")
+                          input(type="hidden" name="hotelId" value=selectedHotel.id)
+                          .dashboard__field
+                            label.dashboard__label Room type
+                            input.dashboard__input(type="text" name="roomType" value=room.roomType required)
+                          .dashboard__field
+                            label.dashboard__label Price
+                            input.dashboard__input(type="number" min="1" step="0.01" name="pricePerNight" value=room.pricePerNight required)
+                          .dashboard__field
+                            label.dashboard__label Capacity
+                            input.dashboard__input(type="number" min="1" step="1" name="capacity" value=room.capacity required)
+                          .dashboard__field
+                            label.dashboard__label Availability
+                            select.dashboard__input(name="available")
+                              option(value="1" selected=room.available) Available
+                              option(value="0" selected=!room.available) Unavailable
+                          .dashboard__actions
+                            button.btn--primary(type="submit") Save changes
+                        form(action=`/owner/hotels/rooms/${room.id}/delete` method="POST" onsubmit="return confirm('Delete this room?')")
+                          input(type="hidden" name="hotelId" value=selectedHotel.id)
+                          button.btn--outline(type="submit") Delete room
               else
                 p.dashboard__empty No rooms added yet.
 

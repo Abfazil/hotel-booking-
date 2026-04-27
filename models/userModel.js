@@ -402,6 +402,59 @@ class UserModel {
       [userId, hotelId]
     );
   }
+
+  async updateCustomerById(userId, { name, email }) {
+    const schema = await this.resolveSchema();
+    const numericId = Number(userId);
+    if (!Number.isFinite(numericId)) return false;
+
+    if (schema.isLegacy) {
+      const { firstName, lastName } = this.splitName(name);
+      const result = await this.db.query(
+        `
+        UPDATE users
+        SET first_name = ?, last_name = ?, email = ?
+        WHERE user_id = ? AND role = 'customer'
+        `,
+        [firstName, lastName, email, numericId]
+      );
+      return Number(result.affectedRows || 0) > 0;
+    }
+
+    const result = await this.db.query(
+      `
+      UPDATE users
+      SET name = ?, email = ?
+      WHERE id = ? AND role = 'customer'
+      `,
+      [name, email, numericId]
+    );
+    return Number(result.affectedRows || 0) > 0;
+  }
+
+  async deleteCustomerById(userId) {
+    const schema = await this.resolveSchema();
+    const numericId = Number(userId);
+    if (!Number.isFinite(numericId)) return { deleted: false, reason: 'invalid-id' };
+
+    const userIdColumn = schema.isLegacy ? 'user_id' : 'id';
+    const bookingsCountSql = `SELECT COUNT(*) AS total FROM bookings WHERE user_id = ?`;
+    const disputesCountSql = `SELECT COUNT(*) AS total FROM disputes WHERE user_id = ?`;
+    const bookingRows = await this.db.query(bookingsCountSql, [numericId]);
+    const disputeRows = await this.db.query(disputesCountSql, [numericId]);
+    const bookingsCount = Number(bookingRows[0]?.total || 0);
+    const disputesCount = Number(disputeRows[0]?.total || 0);
+
+    if (bookingsCount > 0 || disputesCount > 0) {
+      return { deleted: false, reason: 'has-dependencies', bookingsCount, disputesCount };
+    }
+
+    const result = await this.db.query(
+      `DELETE FROM users WHERE ${userIdColumn} = ? AND role = 'customer'`,
+      [numericId]
+    );
+    return { deleted: Number(result.affectedRows || 0) > 0 };
+  }
 }
 
 module.exports = UserModel;
